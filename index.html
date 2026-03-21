@@ -3105,7 +3105,7 @@ function lpWatchDemo() {
 
 const SUPA_URL = 'https://horltkgbjgybhrovaddp.supabase.co';
 const SUPA_KEY = 'sb_publishable_LUU5pympwIlhzh8eb6_8aw_17guRS8v';
-const supa = supabase.createClient(SUPA_URL, SUPA_KEY, {
+const supa = window.supa = supabase.createClient(SUPA_URL, SUPA_KEY, {
   auth: { persistSession: true, autoRefreshToken: true }
 });
 
@@ -3176,11 +3176,34 @@ async function gSignIn() {
   gSetMsg('login', '', '');
   if (!email) { gSetMsg('login', 'Enter your email', 'err'); return; }
   if (!pass)  { gSetMsg('login', 'Enter your password', 'err'); return; }
-  btn.disabled = true; btn.textContent = '⏳ Signing in...';
-  const { data, error } = await supa.auth.signInWithPassword({ email, password: pass });
-  btn.disabled = false; btn.textContent = 'SIGN IN →';
-  if (error) { gSetMsg('login', error.message, 'err'); return; }
-  await gOnSignedIn(data.user);
+  btn.disabled = true;
+  btn.textContent = '⏳';
+  btn.style.opacity = '0.7';
+  try {
+    const { data, error } = await supa.auth.signInWithPassword({ email, password: pass });
+    if (error) {
+      gSetMsg('login', error.message, 'err');
+      btn.disabled = false;
+      btn.textContent = 'SIGN IN →';
+      btn.style.opacity = '1';
+      return;
+    }
+    if (data && data.user) {
+      btn.textContent = '✓ Success!';
+      await gOnSignedIn(data.user);
+    } else {
+      gSetMsg('login', 'Login failed — please try again', 'err');
+      btn.disabled = false;
+      btn.textContent = 'SIGN IN →';
+      btn.style.opacity = '1';
+    }
+  } catch(e) {
+    console.error('gSignIn error:', e);
+    gSetMsg('login', 'Connection error: ' + e.message, 'err');
+    btn.disabled = false;
+    btn.textContent = 'SIGN IN →';
+    btn.style.opacity = '1';
+  }
 }
 
 // ── Sign Up ──
@@ -3251,59 +3274,83 @@ function wtSetStatus() {} function wtGenerateCode() {} function wtLoadCode() {}
 
 // ── Called after successful auth ──
 async function gOnSignedIn(user, usernameOverride) {
-  _globalUser  = user;
-  _currentUser = user;
-  _wtCode      = user.id;
-  _ltUser      = user;
-
-  const username = usernameOverride || user.user_metadata?.lt_username || user.email.split('@')[0];
-
-  // Upsert lt_profiles (silently ignore if table missing)
   try {
-    const { data: prof } = await supa.from('lt_profiles')
-      .upsert({ id: user.id, username, email: user.email, updated_at: new Date().toISOString() }, { onConflict: 'id' })
-      .select().single();
-    _globalProfile = prof || { id: user.id, username, points: 0, current_streak: 0, best_streak: 0 };
-  } catch(e) {
+    _globalUser  = user;
+    _currentUser = user;
+    _wtCode      = user.id;
+    _ltUser      = user;
+
+    const username = usernameOverride || user.user_metadata?.lt_username || user.email.split('@')[0];
+
+    // ── STEP 1: Hide auth overlay FIRST (so user sees something immediately)
+    gHideAuth();
+
+    // ── STEP 2: Show topbar
+    try {
+      const tui = document.getElementById('topbar-user-info');
+      if (tui) { tui.style.display = 'flex'; tui.style.alignItems = 'center'; }
+      const uname = document.getElementById('topbar-username');
+      if (uname) uname.textContent = username;
+      const upts = document.getElementById('topbar-points');
+      if (upts) upts.textContent = '0 pts';
+      const logoutBtn = document.getElementById('topbar-logout-btn');
+      if (logoutBtn) logoutBtn.style.display = 'flex';
+    } catch(e) { console.warn('Topbar error:', e); }
+
+    // ── STEP 3: Navigate to landing page
+    switchPage('landing');
+
+    // ── STEP 4: Setup profile (background)
     _globalProfile = { id: user.id, username, points: 0, current_streak: 0, best_streak: 0 };
+    _ltProfile = _globalProfile;
+
+    try {
+      const { data: prof } = await supa.from('lt_profiles')
+        .upsert({ id: user.id, username, email: user.email, updated_at: new Date().toISOString() }, { onConflict: 'id' })
+        .select().single();
+      if (prof) {
+        _globalProfile = prof;
+        _ltProfile = prof;
+        const upts = document.getElementById('topbar-points');
+        if (upts) upts.textContent = (prof.points || 0) + ' pts';
+      }
+    } catch(e) { console.warn('lt_profiles:', e.message); }
+
+    // ── STEP 5: Setup tracker
+    try {
+      await supa.from('profiles').upsert({ code: user.id }, { onConflict: 'code' });
+    } catch(e) {}
+
+    try {
+      const wtBar = document.getElementById('wt-user-email');
+      if (wtBar) wtBar.textContent = user.email;
+      const logDate = document.getElementById('wt-log-date');
+      if (logDate) logDate.value = new Date().toISOString().split('T')[0];
+      _wtWeekOffset = 0;
+    } catch(e) {}
+
+    // ── STEP 6: Load workout logs
+    try {
+      const { data: logs } = await supa.from('workout_logs')
+        .select('*').eq('code', user.id).order('date', { ascending: true });
+      _wtCache = (logs || []).map(r => ({
+        id: Number(r.id), date: r.date, exercise: r.exercise,
+        weight: parseFloat(r.weight), reps: r.reps, sets: r.sets,
+        rpe: r.rpe ? parseFloat(r.rpe) : null, notes: r.notes || ''
+      }));
+      console.log('[WT] Loaded', _wtCache.length, 'sets');
+      try { wtRefresh(); } catch(e) { console.warn('wtRefresh error:', e.message); }
+    } catch(e) { console.warn('[WT] Load error:', e.message); }
+
+    // ── STEP 7: Update landing hero
+    try { updateLandingHero(); } catch(e) {}
+
+  } catch(e) {
+    console.error('gOnSignedIn fatal error:', e);
+    // Still hide auth even on error
+    gHideAuth();
+    switchPage('landing');
   }
-  _ltProfile = _globalProfile;
-
-  // Upsert workout profiles (silently ignore if missing)
-  try { await supa.from('profiles').upsert({ code: user.id }, { onConflict: 'code' }); } catch(e) {}
-
-  // Hide auth overlay
-  gHideAuth();
-
-  // Show topbar user info
-  const tui = document.getElementById('topbar-user-info');
-  tui.style.display    = 'flex';
-  tui.style.alignItems = 'center';
-  document.getElementById('topbar-username').textContent = _globalProfile.username;
-  document.getElementById('topbar-points').textContent   = (_globalProfile.points || 0) + ' pts';
-  document.getElementById('topbar-logout-btn').style.display = 'flex';
-
-  // Set tracker state
-  const wtBar = document.getElementById('wt-user-email');
-  if (wtBar) wtBar.textContent = user.email;
-  const logDate = document.getElementById('wt-log-date');
-  if (logDate) logDate.value = new Date().toISOString().split('T')[0];
-  _wtWeekOffset = 0;
-
-  // Load workout logs
-  try {
-    const { data: logs } = await supa.from('workout_logs').select('*').eq('code', user.id).order('date', { ascending: true });
-    _wtCache = (logs || []).map(r => ({
-      id: Number(r.id), date: r.date, exercise: r.exercise,
-      weight: parseFloat(r.weight), reps: r.reps, sets: r.sets,
-      rpe: r.rpe ? parseFloat(r.rpe) : null, notes: r.notes || ''
-    }));
-    console.log('[WT] Loaded', _wtCache.length, 'sets');
-    wtRefresh();
-  } catch(e) { console.warn('[WT] Load error:', e.message); }
-
-  // Update landing page
-  updateLandingHero();
 }
 
 // ── Update landing hero for logged-in user ──
@@ -3378,7 +3425,14 @@ async function gInit() {
     }
   });
 }
-gInit();
+// Wait for Supabase to be ready then init
+(function waitForSupa() {
+  if (typeof supabase === 'undefined' || !window.supa) {
+    setTimeout(waitForSupa, 50);
+    return;
+  }
+  gInit();
+})();
 
 // ── Save a new set to Supabase ──
 async function wtSaveSet() {
