@@ -434,13 +434,6 @@
   .lp-review-stars{color:var(--accent);font-size:16px;margin-bottom:12px;}
   .lp-review-text{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:16px;font-style:italic;}
   .lp-review-author{font-family:'Space Mono',monospace;font-size:11px;color:var(--accent3);}
-  /* ARTICLES */
-  .art-grid{display:flex;flex-direction:column;gap:24px;}
-  .art-card{background:var(--card);border:1px solid var(--border);padding:28px;}
-  .art-tag{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:3px;color:var(--accent3);text-transform:uppercase;margin-bottom:10px;}
-  .art-title{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:1px;margin-bottom:14px;line-height:1.1;}
-  .art-body{font-size:14px;color:var(--muted);line-height:1.8;}
-  .art-tip{margin-top:16px;padding:12px 16px;background:rgba(232,255,59,0.06);border-left:3px solid var(--accent);font-size:13px;color:var(--accent);}
 
   /* ============================
      LIFETRACK
@@ -762,93 +755,104 @@
 <body class="lang-en">
 
 <!-- GLOBAL AUTH OVERLAY — shown on first visit -->
-<div id="global-auth-overlay" style="display:flex;position:fixed;inset:0;z-index:9000;overflow-y:auto;">
+<div id="global-auth-overlay" style="display:flex;position:fixed;inset:0;z-index:9000;overflow-y:auto;align-items:center;justify-content:center;">
 
-  <!-- 3D animated background -->
-  <canvas id="auth-canvas" style="position:fixed;inset:0;width:100%;height:100%;z-index:0;"></canvas>
+  <!-- Animated BG canvas -->
+  <canvas id="auth-bg-canvas" style="position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;"></canvas>
 
   <!-- Dark overlay -->
-  <div style="position:fixed;inset:0;background:rgba(5,5,10,0.82);z-index:1;"></div>
+  <div style="position:fixed;inset:0;background:rgba(5,5,10,0.88);z-index:1;pointer-events:none;"></div>
 
-  <!-- Content -->
-  <div style="position:relative;z-index:2;width:100%;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;">
+  <!-- Auth card -->
+  <div style="position:relative;z-index:2;width:100%;max-width:420px;margin:auto;padding:24px 16px;">
 
-    <!-- Logo & tagline -->
-    <div style="text-align:center;margin-bottom:32px;">
-      <div style="font-size:56px;margin-bottom:4px;filter:drop-shadow(0 0 24px rgba(232,255,59,0.5));">💪</div>
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(48px,8vw,80px);letter-spacing:6px;background:linear-gradient(135deg,#e8ff3b 0%,#3bffd4 50%,#e8ff3b 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;margin-bottom:6px;">HYPERTROPHY</div>
-      <p style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:3px;color:rgba(255,255,255,0.4);text-transform:uppercase;">Track · Compete · Dominate</p>
+    <!-- Logo -->
+    <div style="text-align:center;margin-bottom:28px;">
+      <div style="font-size:48px;line-height:1;margin-bottom:8px;">💪</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:56px;letter-spacing:6px;color:#e8ff3b;line-height:1;">HYPERTROPHY</div>
+      <div style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:3px;color:rgba(255,255,255,0.35);margin-top:6px;">TRACK · BUILD · DOMINATE</div>
     </div>
 
-    <!-- Auth card -->
-    <div id="g-auth-card" style="width:100%;max-width:400px;background:rgba(18,18,24,0.95);border:1px solid rgba(255,255,255,0.08);box-shadow:0 0 60px rgba(0,0,0,0.8),0 0 120px rgba(232,255,59,0.06),inset 0 1px 0 rgba(255,255,255,0.06);overflow:hidden;">
+    <!-- Card -->
+    <div id="g-card" style="background:#111;border:1px solid #222;overflow:hidden;">
 
-      <!-- Card top accent line -->
-      <div style="height:2px;background:linear-gradient(90deg,transparent,#e8ff3b,#3bffd4,transparent);"></div>
+      <!-- Top color bar -->
+      <div style="height:2px;background:linear-gradient(90deg,transparent 0%,#e8ff3b 40%,#3bffd4 60%,transparent 100%);"></div>
 
       <!-- Tabs -->
-      <div style="display:flex;border-bottom:1px solid rgba(255,255,255,0.06);">
-        <button id="g-tab-login" onclick="gAuthTab('login')" style="flex:1;padding:16px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;background:transparent;border:none;color:#e8ff3b;border-bottom:2px solid #e8ff3b;cursor:pointer;transition:all 0.2s;">Sign In</button>
-        <button id="g-tab-signup" onclick="gAuthTab('signup')" style="flex:1;padding:16px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;background:transparent;border:none;color:rgba(255,255,255,0.35);border-bottom:2px solid transparent;cursor:pointer;transition:all 0.2s;">Create Account</button>
+      <div style="display:flex;border-bottom:1px solid #222;">
+        <button id="g-tab-login" onclick="gAuthTab('login')"
+          style="flex:1;padding:14px 8px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;background:transparent;border:none;border-bottom:2px solid #e8ff3b;color:#e8ff3b;cursor:pointer;transition:all 0.2s;">
+          Sign In
+        </button>
+        <button id="g-tab-signup" onclick="gAuthTab('signup')"
+          style="flex:1;padding:14px 8px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;background:transparent;border:none;border-bottom:2px solid transparent;color:rgba(255,255,255,0.3);cursor:pointer;transition:all 0.2s;">
+          Create Account
+        </button>
       </div>
 
-      <!-- LOGIN FORM -->
-      <div id="g-form-login" style="display:flex;flex-direction:column;gap:16px;padding:28px;">
+      <!-- ── LOGIN FORM ── -->
+      <div id="g-form-login" style="padding:24px;display:flex;flex-direction:column;gap:16px;">
         <div style="display:flex;flex-direction:column;gap:6px;">
           <label style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,0.4);text-transform:uppercase;">Email</label>
           <input id="g-email-login" type="email" placeholder="you@example.com" autocomplete="email"
-            style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#f0f0f0;font-size:14px;padding:12px 16px;outline:none;transition:border-color 0.2s;font-family:inherit;"
-            onfocus="this.style.borderColor='rgba(232,255,59,0.5)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
+            style="background:#0d0d0d;border:1px solid #2a2a2a;color:#f0f0f0;font-size:14px;padding:11px 14px;outline:none;font-family:inherit;transition:border-color 0.2s;width:100%;"
+            onfocus="this.style.borderColor='#e8ff3b'" onblur="this.style.borderColor='#2a2a2a'"
+            onkeydown="if(event.key==='Enter')gSignIn()">
         </div>
         <div style="display:flex;flex-direction:column;gap:6px;">
           <label style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,0.4);text-transform:uppercase;">Password</label>
           <input id="g-pass-login" type="password" placeholder="••••••••" autocomplete="current-password"
-            style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#f0f0f0;font-size:14px;padding:12px 16px;outline:none;transition:border-color 0.2s;font-family:inherit;"
-            onfocus="this.style.borderColor='rgba(232,255,59,0.5)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'"
+            style="background:#0d0d0d;border:1px solid #2a2a2a;color:#f0f0f0;font-size:14px;padding:11px 14px;outline:none;font-family:inherit;transition:border-color 0.2s;width:100%;"
+            onfocus="this.style.borderColor='#e8ff3b'" onblur="this.style.borderColor='#2a2a2a'"
             onkeydown="if(event.key==='Enter')gSignIn()">
-          <button onclick="gForgotPassword()" style="background:none;border:none;color:rgba(59,255,212,0.6);font-size:11px;cursor:pointer;text-align:left;padding:0;font-family:'Space Mono',monospace;">Forgot password?</button>
+          <button onclick="gForgotPassword()"
+            style="background:none;border:none;color:#3bffd4;font-size:11px;cursor:pointer;text-align:left;padding:0;font-family:'Space Mono',monospace;opacity:0.7;"
+            onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">
+            Forgot password?
+          </button>
         </div>
-        <div id="g-msg-login" style="font-size:12px;min-height:16px;font-family:'Space Mono',monospace;"></div>
+        <div id="g-msg-login" style="font-family:'Space Mono',monospace;font-size:11px;min-height:14px;"></div>
         <button id="g-btn-login" onclick="gSignIn()"
-          style="background:linear-gradient(135deg,#e8ff3b,#c8e020);color:#000;border:none;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:3px;padding:14px;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden;"
-          onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 8px 32px rgba(232,255,59,0.3)'"
-          onmouseout="this.style.transform='';this.style.boxShadow=''">
+          style="background:#e8ff3b;color:#000;border:none;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:3px;padding:13px;cursor:pointer;transition:all 0.2s;width:100%;"
+          onmouseover="this.style.background='#fff';this.style.transform='translateY(-1px)'"
+          onmouseout="this.style.background='#e8ff3b';this.style.transform=''">
           SIGN IN →
         </button>
       </div>
 
-      <!-- SIGNUP FORM -->
-      <div id="g-form-signup" style="display:none;flex-direction:column;gap:14px;padding:28px;">
+      <!-- ── SIGNUP FORM ── -->
+      <div id="g-form-signup" style="padding:24px;display:none;flex-direction:column;gap:14px;">
         <div style="display:flex;flex-direction:column;gap:6px;">
           <label style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,0.4);text-transform:uppercase;">Username</label>
           <input id="g-username" type="text" placeholder="coolname123" autocomplete="username"
-            style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#f0f0f0;font-size:14px;padding:12px 16px;outline:none;transition:border-color 0.2s;font-family:inherit;"
-            onfocus="this.style.borderColor='rgba(59,255,212,0.5)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
+            style="background:#0d0d0d;border:1px solid #2a2a2a;color:#f0f0f0;font-size:14px;padding:11px 14px;outline:none;font-family:inherit;transition:border-color 0.2s;width:100%;"
+            onfocus="this.style.borderColor='#3bffd4'" onblur="this.style.borderColor='#2a2a2a'">
         </div>
         <div style="display:flex;flex-direction:column;gap:6px;">
           <label style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,0.4);text-transform:uppercase;">Email</label>
           <input id="g-email-signup" type="email" placeholder="you@example.com" autocomplete="email"
-            style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#f0f0f0;font-size:14px;padding:12px 16px;outline:none;transition:border-color 0.2s;font-family:inherit;"
-            onfocus="this.style.borderColor='rgba(59,255,212,0.5)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
+            style="background:#0d0d0d;border:1px solid #2a2a2a;color:#f0f0f0;font-size:14px;padding:11px 14px;outline:none;font-family:inherit;transition:border-color 0.2s;width:100%;"
+            onfocus="this.style.borderColor='#3bffd4'" onblur="this.style.borderColor='#2a2a2a'">
         </div>
         <div style="display:flex;flex-direction:column;gap:6px;">
           <label style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,0.4);text-transform:uppercase;">Password</label>
           <input id="g-pass-signup" type="password" placeholder="Min. 6 characters" autocomplete="new-password"
-            style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#f0f0f0;font-size:14px;padding:12px 16px;outline:none;transition:border-color 0.2s;font-family:inherit;"
-            onfocus="this.style.borderColor='rgba(59,255,212,0.5)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
+            style="background:#0d0d0d;border:1px solid #2a2a2a;color:#f0f0f0;font-size:14px;padding:11px 14px;outline:none;font-family:inherit;transition:border-color 0.2s;width:100%;"
+            onfocus="this.style.borderColor='#3bffd4'" onblur="this.style.borderColor='#2a2a2a'">
         </div>
         <div style="display:flex;flex-direction:column;gap:6px;">
           <label style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,0.4);text-transform:uppercase;">Confirm Password</label>
           <input id="g-pass-confirm" type="password" placeholder="Repeat password" autocomplete="new-password"
-            style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#f0f0f0;font-size:14px;padding:12px 16px;outline:none;transition:border-color 0.2s;font-family:inherit;"
-            onfocus="this.style.borderColor='rgba(59,255,212,0.5)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'"
+            style="background:#0d0d0d;border:1px solid #2a2a2a;color:#f0f0f0;font-size:14px;padding:11px 14px;outline:none;font-family:inherit;transition:border-color 0.2s;width:100%;"
+            onfocus="this.style.borderColor='#3bffd4'" onblur="this.style.borderColor='#2a2a2a'"
             onkeydown="if(event.key==='Enter')gSignUp()">
         </div>
-        <div id="g-msg-signup" style="font-size:12px;min-height:16px;font-family:'Space Mono',monospace;"></div>
+        <div id="g-msg-signup" style="font-family:'Space Mono',monospace;font-size:11px;min-height:14px;"></div>
         <button id="g-btn-signup" onclick="gSignUp()"
-          style="background:linear-gradient(135deg,#3bffd4,#1db89c);color:#000;border:none;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:3px;padding:14px;cursor:pointer;transition:all 0.2s;"
-          onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 8px 32px rgba(59,255,212,0.3)'"
-          onmouseout="this.style.transform='';this.style.boxShadow=''">
+          style="background:#3bffd4;color:#000;border:none;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:3px;padding:13px;cursor:pointer;transition:all 0.2s;width:100%;"
+          onmouseover="this.style.background='#fff';this.style.transform='translateY(-1px)'"
+          onmouseout="this.style.background='#3bffd4';this.style.transform=''">
           CREATE ACCOUNT →
         </button>
       </div>
@@ -856,167 +860,48 @@
     </div>
 
     <!-- Footer -->
-    <p style="font-family:'Space Mono',monospace;font-size:10px;color:rgba(255,255,255,0.2);margin-top:20px;letter-spacing:1px;">FREE FOREVER · NO CREDIT CARD</p>
+    <p style="text-align:center;font-family:'Space Mono',monospace;font-size:9px;color:rgba(255,255,255,0.2);margin-top:16px;letter-spacing:2px;">FREE FOREVER · NO CREDIT CARD</p>
 
   </div>
-
-  <!-- 3D Canvas Script -->
-  <script>
-  (function(){
-    const canvas = document.getElementById('auth-canvas');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    let W, H, particles = [], time = 0;
-
-    function resize() {
-      W = canvas.width = window.innerWidth;
-      H = canvas.height = window.innerHeight;
-    }
-
-    function Particle() {
-      this.reset();
-    }
-    Particle.prototype.reset = function() {
-      this.x = Math.random() * W;
-      this.y = Math.random() * H;
-      this.z = Math.random() * 2 + 0.2;
-      this.vx = (Math.random() - 0.5) * 0.4 * this.z;
-      this.vy = (Math.random() - 0.5) * 0.4 * this.z;
-      this.r = Math.random() * 1.5 * this.z + 0.3;
-      this.alpha = Math.random() * 0.5 + 0.1;
-      const hue = Math.random() > 0.5;
-      this.color = hue ? `rgba(232,255,59,${this.alpha})` : `rgba(59,255,212,${this.alpha})`;
-    };
-    Particle.prototype.update = function() {
-      this.x += this.vx;
-      this.y += this.vy;
-      if (this.x < 0 || this.x > W || this.y < 0 || this.y > H) this.reset();
-    };
-
-    // Grid lines (3D perspective)
-    function drawGrid() {
-      const vanishX = W / 2, vanishY = H * 0.42;
-      const cols = 10, rows = 8;
-      ctx.strokeStyle = 'rgba(232,255,59,0.04)';
-      ctx.lineWidth = 0.5;
-      for (let i = 0; i <= cols; i++) {
-        const t = i / cols;
-        const bx = t * W;
-        ctx.beginPath();
-        ctx.moveTo(bx, H);
-        ctx.lineTo(vanishX + (bx - vanishX) * 0.05, vanishY);
-        ctx.stroke();
-      }
-      for (let j = 0; j <= rows; j++) {
-        const t = Math.pow(j / rows, 1.5);
-        const y = vanishY + (H - vanishY) * t;
-        const spread = 1 - (y - vanishY) / (H - vanishY);
-        const x0 = vanishX - (W / 2) * (1 - spread * 0.85);
-        const x1 = vanishX + (W / 2) * (1 - spread * 0.85);
-        ctx.beginPath();
-        ctx.moveTo(x0, y);
-        ctx.lineTo(x1, y);
-        ctx.stroke();
-      }
-    }
-
-    for (let i = 0; i < 120; i++) particles.push(new Particle());
-    resize();
-    window.addEventListener('resize', resize);
-
-    function draw() {
-      ctx.clearRect(0, 0, W, H);
-
-      // Deep space bg
-      const bg = ctx.createRadialGradient(W/2, H/2, 0, W/2, H/2, Math.max(W,H)*0.8);
-      bg.addColorStop(0, 'rgba(12,12,24,1)');
-      bg.addColorStop(1, 'rgba(4,4,10,1)');
-      ctx.fillStyle = bg;
-      ctx.fillRect(0, 0, W, H);
-
-      // Subtle center glow
-      const glow = ctx.createRadialGradient(W/2, H*0.4, 0, W/2, H*0.4, W*0.5);
-      glow.addColorStop(0, 'rgba(232,255,59,0.04)');
-      glow.addColorStop(0.5, 'rgba(59,255,212,0.02)');
-      glow.addColorStop(1, 'transparent');
-      ctx.fillStyle = glow;
-      ctx.fillRect(0, 0, W, H);
-
-      drawGrid();
-
-      // Particles
-      particles.forEach(p => {
-        p.update();
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = p.color;
-        ctx.fill();
-      });
-
-      // Connections
-      ctx.lineWidth = 0.3;
-      for (let i = 0; i < particles.length; i++) {
-        for (let j = i+1; j < particles.length; j++) {
-          const dx = particles[i].x - particles[j].x;
-          const dy = particles[i].y - particles[j].y;
-          const d = Math.sqrt(dx*dx + dy*dy);
-          if (d < 100) {
-            const a = (1 - d/100) * 0.08;
-            ctx.strokeStyle = `rgba(232,255,59,${a})`;
-            ctx.beginPath();
-            ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.stroke();
-          }
-        }
-      }
-
-      time++;
-      requestAnimationFrame(draw);
-    }
-    draw();
-  })();
-  </script>
-
 </div>
 
 <!-- PASSWORD RESET OVERLAY -->
-<div id="global-reset-overlay" style="display:none;position:fixed;inset:0;background:rgba(5,5,10,0.95);z-index:9001;overflow-y:auto;display:none;">
-  <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px 20px;">
-    <div style="width:100%;max-width:400px;">
-      <div style="background:rgba(18,18,24,0.98);border:1px solid rgba(255,255,255,0.08);overflow:hidden;box-shadow:0 0 60px rgba(0,0,0,0.8);">
-        <div style="height:2px;background:linear-gradient(90deg,transparent,#3bffd4,transparent);"></div>
-        <div style="padding:24px 28px 0;border-bottom:1px solid rgba(255,255,255,0.06);">
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;color:#3bffd4;">🔑 SET NEW PASSWORD</div>
-          <div style="font-family:'Space Mono',monospace;font-size:10px;color:rgba(255,255,255,0.35);padding-bottom:16px;margin-top:4px;">Create a new password for your account</div>
+<div id="global-reset-overlay" style="display:none;position:fixed;inset:0;background:rgba(5,5,10,0.95);z-index:9001;overflow-y:auto;align-items:center;justify-content:center;">
+  <div style="width:100%;max-width:420px;margin:auto;padding:24px 16px;">
+    <div style="background:#111;border:1px solid #222;overflow:hidden;">
+      <div style="height:2px;background:linear-gradient(90deg,transparent,#3bffd4,transparent);"></div>
+      <div style="padding:20px 24px 16px;border-bottom:1px solid #222;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:#3bffd4;">🔑 SET NEW PASSWORD</div>
+        <div style="font-family:'Space Mono',monospace;font-size:10px;color:rgba(255,255,255,0.3);margin-top:4px;">Enter your new password below</div>
+      </div>
+      <div style="padding:24px;display:flex;flex-direction:column;gap:16px;">
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <label style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,0.4);text-transform:uppercase;">New Password</label>
+          <input id="reset-pass-new" type="password" placeholder="Min. 6 characters" autocomplete="new-password"
+            style="background:#0d0d0d;border:1px solid #2a2a2a;color:#f0f0f0;font-size:14px;padding:11px 14px;outline:none;font-family:inherit;transition:border-color 0.2s;width:100%;"
+            onfocus="this.style.borderColor='#3bffd4'" onblur="this.style.borderColor='#2a2a2a'">
         </div>
-        <div style="display:flex;flex-direction:column;gap:16px;padding:24px;">
-          <div style="display:flex;flex-direction:column;gap:6px;">
-            <label style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,0.4);text-transform:uppercase;">New Password</label>
-            <input id="reset-pass-new" type="password" placeholder="Min. 6 characters" autocomplete="new-password"
-              style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#f0f0f0;font-size:14px;padding:12px 16px;outline:none;transition:border-color 0.2s;font-family:inherit;"
-              onfocus="this.style.borderColor='rgba(59,255,212,0.5)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
-          </div>
-          <div style="display:flex;flex-direction:column;gap:6px;">
-            <label style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,0.4);text-transform:uppercase;">Confirm Password</label>
-            <input id="reset-pass-confirm" type="password" placeholder="Repeat password" autocomplete="new-password"
-              style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:#f0f0f0;font-size:14px;padding:12px 16px;outline:none;transition:border-color 0.2s;font-family:inherit;"
-              onfocus="this.style.borderColor='rgba(59,255,212,0.5)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
-          </div>
-          <div id="auth-msg-reset" style="font-size:12px;min-height:16px;font-family:'Space Mono',monospace;"></div>
-          <button id="auth-btn-reset" onclick="authUpdatePassword()"
-            style="background:linear-gradient(135deg,#3bffd4,#1db89c);color:#000;border:none;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:3px;padding:14px;cursor:pointer;transition:all 0.2s;">
-            SAVE NEW PASSWORD →
-          </button>
-          <button onclick="document.getElementById('global-reset-overlay').style.display='none';document.getElementById('global-auth-overlay').style.display='flex';"
-            style="background:none;border:none;color:rgba(255,255,255,0.3);font-size:12px;cursor:pointer;font-family:'Space Mono',monospace;padding:4px;">
-            ← Back to Sign In
-          </button>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <label style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,0.4);text-transform:uppercase;">Confirm Password</label>
+          <input id="reset-pass-confirm" type="password" placeholder="Repeat password" autocomplete="new-password"
+            style="background:#0d0d0d;border:1px solid #2a2a2a;color:#f0f0f0;font-size:14px;padding:11px 14px;outline:none;font-family:inherit;transition:border-color 0.2s;width:100%;"
+            onfocus="this.style.borderColor='#3bffd4'" onblur="this.style.borderColor='#2a2a2a'"
+            onkeydown="if(event.key==='Enter')authUpdatePassword()">
         </div>
+        <div id="auth-msg-reset" style="font-family:'Space Mono',monospace;font-size:11px;min-height:14px;"></div>
+        <button id="auth-btn-reset" onclick="authUpdatePassword()"
+          style="background:#3bffd4;color:#000;border:none;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:3px;padding:13px;cursor:pointer;transition:all 0.2s;width:100%;">
+          SAVE NEW PASSWORD →
+        </button>
+        <button onclick="gShowAuth()"
+          style="background:none;border:none;color:rgba(255,255,255,0.3);font-size:11px;cursor:pointer;font-family:'Space Mono',monospace;padding:4px;text-align:center;">
+          ← Back to Sign In
+        </button>
       </div>
     </div>
   </div>
 </div>
+
 
 <!-- STICKY TOP BAR: lang switcher + page tabs + download (all in one non-overlapping bar) -->
 <div class="top-bar">
@@ -1024,7 +909,6 @@
     <button class="page-tab active" onclick="switchPage('landing')" id="landingTabBtn">🏠 Home</button>
     <button class="page-tab" onclick="switchPage('program')">📋 Program</button>
     <button class="page-tab" onclick="switchPage('weights')" id="wtTabBtn">⚖️ Tracker</button>
-    <button class="page-tab" onclick="switchPage('articles')">📝 Tips</button>
     <button class="page-tab" onclick="switchPage('life')">⚡ LifeTrack</button>
   </nav>
   <div class="top-bar-right">
@@ -1237,59 +1121,7 @@
 
 </div><!-- end page-landing -->
 
-<!-- ===== PAGE: ARTICLES / TIPS ===== -->
-<div class="page-view" id="page-articles">
-<div style="max-width:800px;margin:0 auto;padding:48px 20px;">
 
-  <p class="section-label">TRAINING TIPS</p>
-
-  <div class="art-grid">
-
-    <article class="art-card">
-      <div class="art-tag">BEGINNER</div>
-      <h2 class="art-title">How to Start at the Gym From Zero</h2>
-      <p class="art-body">Starting the gym can feel overwhelming. Here is the simple truth: you don't need a perfect plan on day one. You need consistency. Follow these 3 rules for your first month:<br><br><strong>1. Show up 3 times a week</strong> — even if the workout isn't perfect.<br><strong>2. Focus on form, not weight</strong> — light weight with perfect technique beats heavy weight with bad form.<br><strong>3. Track everything</strong> — use this tracker to log every set. You'll be amazed how fast you progress when you can see the numbers going up.</p>
-      <div class="art-tip">💡 Tip: The best program is the one you actually do consistently.</div>
-    </article>
-
-    <article class="art-card">
-      <div class="art-tag">NUTRITION</div>
-      <h2 class="art-title">How Much Protein Do You Actually Need?</h2>
-      <p class="art-body">The science is clear: to build muscle you need <strong>1.6–2.2g of protein per kg of bodyweight</strong> per day. For a 70kg person that's 112–154g daily.<br><br>Best sources: chicken breast, eggs, tuna, Greek yogurt, cottage cheese, lentils.<br><br>Don't overthink it — hit your protein target and the rest (carbs, fats) will take care of itself. Use the Macro Calculator in this app to get your exact daily targets.</p>
-      <div class="art-tip">💡 Tip: Spread protein across 3-4 meals for best absorption.</div>
-    </article>
-
-    <article class="art-card">
-      <div class="art-tag">PROGRESSION</div>
-      <h2 class="art-title">The Only Way to Build Muscle Long-Term</h2>
-      <p class="art-body">Progressive overload is the single most important concept in training. It means: <strong>do slightly more over time</strong>.<br><br>This doesn't always mean adding weight. You can progress by:<br>• Adding 1 rep (8 → 9 reps same weight)<br>• Adding a set (3 → 4 sets)<br>• Adding weight (60kg → 62.5kg)<br>• Improving form and range of motion<br><br>This tracker shows you week vs last week for every exercise. Use it to make sure you're always moving forward.</p>
-      <div class="art-tip">💡 Tip: Add weight only when you hit the top of the rep range on all sets.</div>
-    </article>
-
-    <article class="art-card">
-      <div class="art-tag">RECOVERY</div>
-      <h2 class="art-title">Sleep: The Most Anabolic Thing You Can Do</h2>
-      <p class="art-body">You don't build muscle in the gym — you build it while you sleep. Growth hormone peaks during deep sleep. Testosterone production depends on sleep quality.<br><br><strong>7-9 hours of sleep</strong> is not optional for muscle growth — it's required.<br><br>Signs you're under-recovering: persistent soreness, strength going down, poor mood, low motivation. If this sounds like you, sleep more before adding more volume.</p>
-      <div class="art-tip">💡 Tip: Sleep in a cold, dark room. Avoid screens 1 hour before bed.</div>
-    </article>
-
-    <article class="art-card">
-      <div class="art-tag">MOTIVATION</div>
-      <h2 class="art-title">How to Stay Consistent When You Don't Feel Like It</h2>
-      <p class="art-body">Motivation comes and goes. Discipline is what gets you to the gym on bad days. Here's what actually works:<br><br><strong>1. Track your streak</strong> — use the heatmap in this app. Missing a day breaks the chain.<br><strong>2. Lower the barrier</strong> — on tough days, tell yourself "I'll just do 10 minutes." You'll usually finish the whole workout.<br><strong>3. Compare to yourself, not others</strong> — the only competition is your previous self.<br><strong>4. See the numbers go up</strong> — that's why logging every set matters. Progress is the best motivation.</p>
-      <div class="art-tip">💡 Tip: Schedule workouts like meetings — they're non-negotiable.</div>
-    </article>
-
-    <article class="art-card">
-      <div class="art-tag">ADVANCED</div>
-      <h2 class="art-title">When to Move From 3 Days to 4-5 Days</h2>
-      <p class="art-body">The 3-day full body program is perfect for 6-12 months. But after that, you may need more volume to keep growing.<br><br>Signs you're ready to progress:<br>• You've been training consistently for 6+ months<br>• Your progress has slowed despite eating and sleeping well<br>• You recover quickly and could handle more<br><br>A 4-day Upper/Lower split is the natural next step. Each muscle gets trained twice a week with more total sets. Use the tracker to monitor your progress as you transition.</p>
-      <div class="art-tip">💡 Tip: Don't rush to add days. Consistency on 3 days beats inconsistency on 5.</div>
-    </article>
-
-  </div>
-</div>
-</div><!-- end page-articles -->
 
 <!-- ===== PAGE: LIFETRACK ===== -->
 <div class="page-view" id="page-life">
@@ -2003,10 +1835,13 @@ function switchPage(page) {
   const pg = document.getElementById('page-' + page);
   if (pg) pg.classList.add('active');
   const tabs = document.querySelectorAll('.page-tab');
-  const idx = {landing:0, program:1, weights:2, articles:3, life:4}[page] ?? 0;
+  const idx = {landing:0, program:1, weights:2, life:3}[page] ?? 0;
   if (tabs[idx]) tabs[idx].classList.add('active');
   window.scrollTo(0, 0);
-  if (page === 'life' && typeof _ltUser !== 'undefined' && _ltUser) ltPage('dash');
+  if (page === 'life') {
+    if (!_ltUser && _globalUser) { _ltUser = _globalUser; _ltProfile = _globalProfile; }
+    if (_ltUser) ltPage('dash');
+  }
 }
 
 // ==================== SHARE FUNCTIONS ====================
@@ -2045,85 +1880,107 @@ let _currentUser = null;
 
 // ── Auth tab switcher ──
 // ====================================================
-// UNIFIED GLOBAL AUTH — one login for Tracker + LifeTrack
+// ====================================================
+// UNIFIED AUTH — one login for Tracker + LifeTrack
 // ====================================================
 
-// Global auth state (shared by both systems)
 let _globalUser = null;
 let _globalProfile = null;
 
-// ── Global auth tab switcher ──
-function gAuthTab(tab) {
-  const loginForm = document.getElementById('g-form-login');
-  const signupForm = document.getElementById('g-form-signup');
-  const loginTab = document.getElementById('g-tab-login');
-  const signupTab = document.getElementById('g-tab-signup');
+// Show / hide auth screens
+function gShowAuth() {
+  document.getElementById('global-auth-overlay').style.display = 'flex';
+  document.getElementById('global-reset-overlay').style.display = 'none';
+}
+function gHideAuth() {
+  document.getElementById('global-auth-overlay').style.display = 'none';
+  document.getElementById('global-reset-overlay').style.display = 'none';
+}
+function gShowReset() {
+  document.getElementById('global-auth-overlay').style.display = 'none';
+  document.getElementById('global-reset-overlay').style.display = 'flex';
+}
 
+// Tab switch
+function gAuthTab(tab) {
+  const loginForm   = document.getElementById('g-form-login');
+  const signupForm  = document.getElementById('g-form-signup');
+  const loginTab    = document.getElementById('g-tab-login');
+  const signupTab   = document.getElementById('g-tab-signup');
   if (tab === 'login') {
-    loginForm.style.display = 'flex';
+    loginForm.style.display  = 'flex';
     signupForm.style.display = 'none';
-    loginTab.style.color = '#e8ff3b';
+    loginTab.style.color        = '#e8ff3b';
     loginTab.style.borderBottom = '2px solid #e8ff3b';
-    signupTab.style.color = 'rgba(255,255,255,0.35)';
+    signupTab.style.color        = 'rgba(255,255,255,0.3)';
     signupTab.style.borderBottom = '2px solid transparent';
   } else {
-    loginForm.style.display = 'none';
+    loginForm.style.display  = 'none';
     signupForm.style.display = 'flex';
-    signupTab.style.color = '#3bffd4';
+    signupTab.style.color        = '#3bffd4';
     signupTab.style.borderBottom = '2px solid #3bffd4';
-    loginTab.style.color = 'rgba(255,255,255,0.35)';
+    loginTab.style.color        = 'rgba(255,255,255,0.3)';
     loginTab.style.borderBottom = '2px solid transparent';
   }
 }
 
-function gSetMsg(form, msg, cls) {
-  const el = document.getElementById('g-msg-'+form);
+// Message helper
+function gSetMsg(form, msg, type) {
+  const el = document.getElementById('g-msg-' + form);
   if (!el) return;
   el.textContent = msg;
-  el.style.color = cls==='err' ? '#ff4f3b' : cls==='ok' ? '#3bffd4' : 'rgba(255,255,255,0.5)';
-}
-
-// ── Sign Up ──
-async function gSignUp() {
-  const username = document.getElementById('g-username').value.trim();
-  const email    = document.getElementById('g-email-signup').value.trim();
-  const pass     = document.getElementById('g-pass-signup').value;
-  const conf     = document.getElementById('g-pass-confirm').value;
-  const btn      = document.getElementById('g-btn-signup');
-  if (!username || username.length < 3) { gSetMsg('signup','Username must be 3+ characters','err'); return; }
-  if (!email || !pass) { gSetMsg('signup','Fill in all fields','err'); return; }
-  if (pass.length < 6) { gSetMsg('signup','Password must be 6+ characters','err'); return; }
-  if (pass !== conf)   { gSetMsg('signup','Passwords do not match','err'); return; }
-  const { data: ex } = await supa.from('lt_profiles').select('id').eq('username', username).maybeSingle();
-  if (ex) { gSetMsg('signup','Username already taken','err'); return; }
-  btn.disabled = true; btn.textContent = '⏳';
-  const { data, error } = await supa.auth.signUp({ email, password: pass, options: { data: { lt_username: username } } });
-  btn.disabled = false; btn.textContent = 'CREATE ACCOUNT';
-  if (error) { gSetMsg('signup', error.message, 'err'); return; }
-  if (data.user && !data.session) { gSetMsg('signup','✓ Check your email to confirm, then sign in.','ok'); return; }
-  if (data.user) await gOnSignedIn(data.user, username);
+  el.style.color = type === 'err' ? '#ff4f3b' : type === 'ok' ? '#3bffd4' : 'rgba(255,255,255,0.5)';
 }
 
 // ── Sign In ──
 async function gSignIn() {
-  const email = document.getElementById('g-email-login').value.trim();
-  const pass  = document.getElementById('g-pass-login').value;
+  const email = (document.getElementById('g-email-login').value || '').trim();
+  const pass  = document.getElementById('g-pass-login').value || '';
   const btn   = document.getElementById('g-btn-login');
-  if (!email || !pass) { gSetMsg('login','Fill in all fields','err'); return; }
-  btn.disabled = true; btn.textContent = '⏳';
+  gSetMsg('login', '', '');
+  if (!email) { gSetMsg('login', 'Enter your email', 'err'); return; }
+  if (!pass)  { gSetMsg('login', 'Enter your password', 'err'); return; }
+  btn.disabled = true; btn.textContent = '⏳ Signing in...';
   const { data, error } = await supa.auth.signInWithPassword({ email, password: pass });
-  btn.disabled = false; btn.textContent = 'SIGN IN';
+  btn.disabled = false; btn.textContent = 'SIGN IN →';
   if (error) { gSetMsg('login', error.message, 'err'); return; }
   await gOnSignedIn(data.user);
 }
 
+// ── Sign Up ──
+async function gSignUp() {
+  const username = (document.getElementById('g-username').value || '').trim();
+  const email    = (document.getElementById('g-email-signup').value || '').trim();
+  const pass     = document.getElementById('g-pass-signup').value || '';
+  const conf     = document.getElementById('g-pass-confirm').value || '';
+  const btn      = document.getElementById('g-btn-signup');
+  gSetMsg('signup', '', '');
+  if (!username || username.length < 3) { gSetMsg('signup', 'Username must be at least 3 characters', 'err'); return; }
+  if (!email)       { gSetMsg('signup', 'Enter your email', 'err'); return; }
+  if (!pass)        { gSetMsg('signup', 'Enter a password', 'err'); return; }
+  if (pass.length < 6) { gSetMsg('signup', 'Password must be at least 6 characters', 'err'); return; }
+  if (pass !== conf)   { gSetMsg('signup', 'Passwords do not match', 'err'); return; }
+  btn.disabled = true; btn.textContent = '⏳ Creating account...';
+  const { data, error } = await supa.auth.signUp({
+    email, password: pass,
+    options: { data: { lt_username: username } }
+  });
+  btn.disabled = false; btn.textContent = 'CREATE ACCOUNT →';
+  if (error) { gSetMsg('signup', error.message, 'err'); return; }
+  if (data.user && !data.session) {
+    gSetMsg('signup', '✓ Account created! Check your email to confirm, then sign in.', 'ok');
+    return;
+  }
+  if (data.user) await gOnSignedIn(data.user, username);
+}
+
 // ── Forgot Password ──
 async function gForgotPassword() {
-  const email = document.getElementById('g-email-login').value.trim();
-  if (!email) { gSetMsg('login','Enter your email above first','err'); return; }
+  const email = (document.getElementById('g-email-login').value || '').trim();
+  if (!email) { gSetMsg('login', 'Enter your email above first', 'err'); return; }
   const { error } = await supa.auth.resetPasswordForEmail(email, { redirectTo: window.location.href });
   if (error) { gSetMsg('login', error.message, 'err'); return; }
-  gSetMsg('login','✓ Reset email sent! Check your inbox.','ok');
+  gSetMsg('login', '✓ Reset email sent! Check your inbox.', 'ok');
 }
 
 // ── Sign Out ──
@@ -2132,98 +1989,116 @@ async function gSignOut() {
   _globalUser = null; _globalProfile = null;
   _currentUser = null; _wtCode = null; _wtCache = [];
   _ltUser = null; _ltProfile = null; _ltHabits = []; _ltCompletions = {};
-  // Show global auth overlay
-  document.getElementById('global-auth-overlay').style.display = 'flex';
-  // Hide user info in topbar
   document.getElementById('topbar-user-info').style.display = 'none';
   document.getElementById('topbar-logout-btn').style.display = 'none';
-  // Reset forms
-  document.getElementById('g-email-login').value = '';
-  document.getElementById('g-pass-login').value = '';
-  // Show landing page
+  // Clear form fields
+  ['g-email-login','g-pass-login','g-email-signup','g-pass-signup','g-pass-confirm','g-username'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  gSetMsg('login','',''); gSetMsg('signup','','');
   switchPage('landing');
-  // Show guest hero
   document.getElementById('lp-guest').style.display = 'block';
-  document.getElementById('lp-user').style.display = 'none';
+  document.getElementById('lp-user').style.display  = 'none';
+  gShowAuth();
 }
 
-// Keep old names as aliases
+// Aliases for backward compatibility
 const authSignOut = gSignOut;
 const authForgotPassword = gForgotPassword;
+function authSwitchTab(t) { gAuthTab(t); }
+function authSetMsg(f,m,c) { gSetMsg(f,m,c); }
+async function authSignIn() { await gSignIn(); }
+async function authSignUp() { await gSignUp(); }
+async function authOnSignedIn(u) { await gOnSignedIn(u); }
+function authCancelReset() { gShowAuth(); }
+function wtSetStatus() {} function wtGenerateCode() {} function wtLoadCode() {}
 
-// ── Called after successful sign-in ──
+// ── Called after successful auth ──
 async function gOnSignedIn(user, usernameOverride) {
-  _globalUser = user;
+  _globalUser  = user;
   _currentUser = user;
-  _wtCode = user.id;
-  _ltUser = user;
+  _wtCode      = user.id;
+  _ltUser      = user;
 
-  // Upsert lt_profiles (for LifeTrack)
   const username = usernameOverride || user.user_metadata?.lt_username || user.email.split('@')[0];
-  const { data: profile } = await supa.from('lt_profiles')
-    .upsert({ id: user.id, username, email: user.email, updated_at: new Date().toISOString() }, { onConflict: 'id' })
-    .select().single();
-  _globalProfile = profile || { id: user.id, username, points: 0, current_streak: 0, best_streak: 0 };
+
+  // Upsert lt_profiles (silently ignore if table missing)
+  try {
+    const { data: prof } = await supa.from('lt_profiles')
+      .upsert({ id: user.id, username, email: user.email, updated_at: new Date().toISOString() }, { onConflict: 'id' })
+      .select().single();
+    _globalProfile = prof || { id: user.id, username, points: 0, current_streak: 0, best_streak: 0 };
+  } catch(e) {
+    _globalProfile = { id: user.id, username, points: 0, current_streak: 0, best_streak: 0 };
+  }
   _ltProfile = _globalProfile;
 
-  // Upsert workout profiles table
-  await supa.from('profiles').upsert({ code: user.id }, { onConflict: 'code' });
+  // Upsert workout profiles (silently ignore if missing)
+  try { await supa.from('profiles').upsert({ code: user.id }, { onConflict: 'code' }); } catch(e) {}
 
   // Hide auth overlay
-  document.getElementById('global-auth-overlay').style.display = 'none';
-  document.getElementById('global-reset-overlay').style.display = 'none';
+  gHideAuth();
 
-  // Show user info in topbar
-  const tui = document.getElementById('topbar-user-info'); tui.style.display='flex'; tui.style.alignItems='center';
+  // Show topbar user info
+  const tui = document.getElementById('topbar-user-info');
+  tui.style.display    = 'flex';
+  tui.style.alignItems = 'center';
   document.getElementById('topbar-username').textContent = _globalProfile.username;
-  document.getElementById('topbar-points').textContent = (_globalProfile.points||0) + ' pts';
+  document.getElementById('topbar-points').textContent   = (_globalProfile.points || 0) + ' pts';
   document.getElementById('topbar-logout-btn').style.display = 'flex';
 
-  // Update tracker user bar
+  // Set tracker state
   const wtBar = document.getElementById('wt-user-email');
   if (wtBar) wtBar.textContent = user.email;
-
-  // Set today's date in tracker form
   const logDate = document.getElementById('wt-log-date');
   if (logDate) logDate.value = new Date().toISOString().split('T')[0];
   _wtWeekOffset = 0;
 
   // Load workout logs
-  const { data: logs } = await supa.from('workout_logs').select('*').eq('code', user.id).order('date', { ascending: true });
-  _wtCache = (logs||[]).map(r => ({
-    id: Number(r.id), date: r.date, exercise: r.exercise,
-    weight: parseFloat(r.weight), reps: r.reps, sets: r.sets,
-    rpe: r.rpe ? parseFloat(r.rpe) : null, notes: r.notes||''
-  }));
-  console.log('[WT] Loaded', _wtCache.length, 'sets for user:', user.email);
-  wtRefresh();
+  try {
+    const { data: logs } = await supa.from('workout_logs').select('*').eq('code', user.id).order('date', { ascending: true });
+    _wtCache = (logs || []).map(r => ({
+      id: Number(r.id), date: r.date, exercise: r.exercise,
+      weight: parseFloat(r.weight), reps: r.reps, sets: r.sets,
+      rpe: r.rpe ? parseFloat(r.rpe) : null, notes: r.notes || ''
+    }));
+    console.log('[WT] Loaded', _wtCache.length, 'sets');
+    wtRefresh();
+  } catch(e) { console.warn('[WT] Load error:', e.message); }
 
-  // Update landing page hero
+  // Update landing page
   updateLandingHero();
 }
 
-// ── Update landing page with user info ──
+// ── Update landing hero for logged-in user ──
 async function updateLandingHero() {
   if (!_globalProfile) return;
   document.getElementById('lp-guest').style.display = 'none';
-  document.getElementById('lp-user').style.display = 'block';
+  document.getElementById('lp-user').style.display  = 'block';
   document.getElementById('lp-user-badge').textContent = '👋 Welcome back, ' + _globalProfile.username + '!';
-  document.getElementById('lp-user-name').textContent = _globalProfile.username + '.';
-  document.getElementById('lp-stat-pts').textContent = _globalProfile.points||0;
-  document.getElementById('lp-stat-streak').textContent = _globalProfile.best_streak||0;
-  // Load habit count for today
-  await ltLoadHabitsData();
-  const done = Object.values(_ltCompletions).filter(Boolean).length;
-  const total = _ltHabits.length;
-  document.getElementById('lp-stat-habits').textContent = done+'/'+total;
-  document.getElementById('lp-user-sub').textContent = total>0
-    ? (done===total ? '🔥 All habits done today! You're unstoppable.' : '⚡ '+done+'/'+total+' habits done today. Keep going!')
-    : '⚡ Start tracking your habits in the LifeTrack tab.';
-  // Rank
-  const { data: ranked } = await supa.from('lt_profiles').select('id').order('points',{ascending:false});
-  if (ranked) { const r=ranked.findIndex(x=>x.id===_globalUser.id)+1; document.getElementById('lp-stat-rank').textContent=r>0?'#'+r:'#—'; }
-  // Update topbar points
-  document.getElementById('topbar-points').textContent = (_globalProfile.points||0)+' pts';
+  document.getElementById('lp-user-name').textContent  = _globalProfile.username + '.';
+  document.getElementById('lp-stat-pts').textContent   = _globalProfile.points || 0;
+  document.getElementById('lp-stat-streak').textContent = _globalProfile.best_streak || 0;
+  try {
+    await ltLoadHabitsData();
+    const done = Object.values(_ltCompletions).filter(Boolean).length;
+    document.getElementById('lp-stat-habits').textContent = done + '/' + _ltHabits.length;
+    document.getElementById('lp-user-sub').textContent = _ltHabits.length === 0
+      ? '⚡ Start tracking habits in the LifeTrack tab.'
+      : done === _ltHabits.length
+        ? '🔥 All habits done today! Perfect day.'
+        : '⚡ ' + done + '/' + _ltHabits.length + ' habits done today. Keep going!';
+  } catch(e) {
+    document.getElementById('lp-stat-habits').textContent = '0/0';
+  }
+  try {
+    const { data: ranked } = await supa.from('lt_profiles').select('id').order('points', { ascending: false });
+    if (ranked) {
+      const r = ranked.findIndex(x => x.id === _globalUser.id) + 1;
+      document.getElementById('lp-stat-rank').textContent = r > 0 ? '#' + r : '#—';
+    }
+  } catch(e) {}
+  document.getElementById('topbar-points').textContent = (_globalProfile.points || 0) + ' pts';
 }
 
 // ── Password reset ──
@@ -2231,47 +2106,39 @@ async function authUpdatePassword() {
   const newPass  = document.getElementById('reset-pass-new').value;
   const confPass = document.getElementById('reset-pass-confirm').value;
   const btn      = document.getElementById('auth-btn-reset');
-  if (!newPass || newPass.length < 6) { document.getElementById('auth-msg-reset').textContent='Min. 6 characters'; document.getElementById('auth-msg-reset').className='auth-msg err'; return; }
-  if (newPass !== confPass) { document.getElementById('auth-msg-reset').textContent='Passwords do not match'; document.getElementById('auth-msg-reset').className='auth-msg err'; return; }
-  btn.disabled=true; btn.textContent='⏳';
+  const msg      = document.getElementById('auth-msg-reset');
+  msg.style.color = '#ff4f3b';
+  if (!newPass || newPass.length < 6) { msg.textContent = 'Password must be at least 6 characters'; return; }
+  if (newPass !== confPass)           { msg.textContent = 'Passwords do not match'; return; }
+  btn.disabled = true; btn.textContent = '⏳ Saving...';
   const { error } = await supa.auth.updateUser({ password: newPass });
-  btn.disabled=false; btn.textContent='SAVE NEW PASSWORD';
-  if (error) { document.getElementById('auth-msg-reset').textContent='✗ '+error.message; document.getElementById('auth-msg-reset').className='auth-msg err'; return; }
-  document.getElementById('auth-msg-reset').textContent='✓ Password updated!'; document.getElementById('auth-msg-reset').className='auth-msg ok';
-  document.getElementById('reset-pass-new').value=''; document.getElementById('reset-pass-confirm').value='';
+  btn.disabled = false; btn.textContent = 'SAVE NEW PASSWORD →';
+  if (error) { msg.textContent = error.message; return; }
+  msg.style.color = '#3bffd4';
+  msg.textContent = '✓ Password updated! Signing you in...';
+  document.getElementById('reset-pass-new').value    = '';
+  document.getElementById('reset-pass-confirm').value = '';
   setTimeout(async () => {
-    document.getElementById('global-reset-overlay').style.display='none';
-    const { data:{user} } = await supa.auth.getUser();
+    const { data: { user } } = await supa.auth.getUser();
     if (user) gOnSignedIn(user);
-  }, 1500);
+  }, 1200);
 }
 
-// ── Keep old stubs so existing code doesn't break ──
-function authSwitchTab(tab) { gAuthTab(tab); }
-function authSetMsg(f,m,c) { gSetMsg(f,m,c); }
-async function authSignIn() { await gSignIn(); }
-async function authSignUp() { await gSignUp(); }
-async function authOnSignedIn(user) { await gOnSignedIn(user); }
-function wtSetStatus(cls,msg) {}
-async function wtGenerateCode() {}
-async function wtLoadCode() {}
-function authCancelReset() { document.getElementById('global-reset-overlay').style.display='none'; document.getElementById('global-auth-overlay').style.display='flex'; }
-
-// ── Page init: check for existing session ──
+// ── App init ──
 async function gInit() {
-  const { data:{session} } = await supa.auth.getSession();
+  // Check existing session
+  const { data: { session } } = await supa.auth.getSession();
   if (session?.user) {
     await gOnSignedIn(session.user);
   } else {
-    // Show auth overlay
-    document.getElementById('global-auth-overlay').style.display = 'flex';
+    gShowAuth();
   }
+  // Auth state listener
   supa.auth.onAuthStateChange(async (event, session) => {
-    if (event==='SIGNED_IN' && session?.user && !_globalUser) {
+    if (event === 'SIGNED_IN' && session?.user && !_globalUser) {
       await gOnSignedIn(session.user);
-    } else if (event==='PASSWORD_RECOVERY') {
-      document.getElementById('global-auth-overlay').style.display='none';
-      document.getElementById('global-reset-overlay').style.display='flex';
+    } else if (event === 'PASSWORD_RECOVERY') {
+      gShowReset();
     }
   });
 }
@@ -3164,151 +3031,169 @@ function wtRenderHeatmap(sets) {
 
 <script>
 // ==================== LIFETRACK ====================
-// Separate from the workout tracker — uses lt_ prefix for all variables/functions
 
 const LT_POINTS = { easy: 10, medium: 20, hard: 30 };
-let _ltUser = null;
-let _ltProfile = null;
-let _ltHabits = [];
-let _ltCompletions = {};
+let _ltUser = null, _ltProfile = null, _ltHabits = [], _ltCompletions = {};
 
 function ltToday() {
   const d = new Date();
   return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 }
-
 function ltToast(msg) { showToast(msg); }
-
-function ltAvatarColor(str) {
-  const colors = ['#3bffd4','#e8ff3b','#a78bfa','#f472b6','#fb923c','#60a5fa'];
-  let h = 0; for (let c of (str||'')) h = c.charCodeAt(0)+((h<<5)-h);
-  return colors[Math.abs(h)%colors.length];
-}
+function ltAvatarColor(s) { const c=['#3bffd4','#e8ff3b','#a78bfa','#f472b6','#fb923c','#60a5fa']; let h=0; for(let x of(s||''))h=x.charCodeAt(0)+((h<<5)-h); return c[Math.abs(h)%c.length]; }
 function ltInitials(s) { return (s||'?').substring(0,2).toUpperCase(); }
 
-// ── Auth ──
-function ltAuthTab(tab) {
-  document.getElementById('lt-form-login').style.display = tab==='login'?'flex':'none';
-  document.getElementById('lt-form-signup').style.display = tab==='signup'?'flex':'none';
-  document.getElementById('lt-tab-login').classList.toggle('active', tab==='login');
-  document.getElementById('lt-tab-signup').classList.toggle('active', tab==='signup');
-}
-
-function ltSetMsg(form, msg, cls) {
-  const el = document.getElementById('lt-msg-'+form);
-  el.textContent = msg; el.className = 'auth-msg '+(cls||'');
-}
-
-async function ltSignUp() {
-  const username = document.getElementById('lt-username').value.trim();
-  const email    = document.getElementById('lt-email-signup').value.trim();
-  const pass     = document.getElementById('lt-pass-signup').value;
-  const btn      = document.getElementById('lt-btn-signup');
-  if (!username || username.length < 3) { ltSetMsg('signup','Username must be 3+ characters','err'); return; }
-  if (!email || !pass) { ltSetMsg('signup','Fill all fields','err'); return; }
-  if (pass.length < 6) { ltSetMsg('signup','Password 6+ characters','err'); return; }
-  const { data: ex } = await supa.from('lt_profiles').select('id').eq('username', username).maybeSingle();
-  if (ex) { ltSetMsg('signup','Username taken','err'); return; }
-  btn.disabled = true; btn.textContent = '⏳';
-  const { data, error } = await supa.auth.signUp({ email, password: pass, options: { data: { lt_username: username } } });
-  btn.disabled = false; btn.textContent = 'CREATE ACCOUNT';
-  if (error) { ltSetMsg('signup', error.message, 'err'); return; }
-  if (data.user) await ltOnSignedIn(data.user, username);
-}
-
+// Aliases
 async function ltSignIn() { await gSignIn(); }
-
 async function ltSignOut() { await gSignOut(); }
-
-async function ltOnSignedIn(user, usernameOverride) { await gOnSignedIn(user, usernameOverride); }
+async function ltOnSignedIn(u, n) { await gOnSignedIn(u, n); }
 
 // ── Page navigation ──
 function ltPage(pg) {
+  // Sync _ltUser with global user
+  if (!_ltUser && _globalUser) { _ltUser = _globalUser; _ltProfile = _globalProfile; }
+  console.log('[LT] ltPage:', pg, '_ltUser:', _ltUser ? _ltUser.email : 'null');
   ['dash','habits','challenges','leaderboard','friends'].forEach(p => {
     const el = document.getElementById('lt-'+p);
-    if (el) el.style.display = p===pg ? 'block':'none';
+    if (el) el.style.display = p===pg ? 'block' : 'none';
+    else console.warn('[LT] Element not found: lt-'+p);
     const btn = document.getElementById('lt-nav-'+p);
     if (btn) btn.classList.toggle('active', p===pg);
   });
-  if (pg==='dash') ltLoadDash();
-  else if (pg==='habits') ltLoadHabits();
-  else if (pg==='challenges') ltChTab('my');
+  if      (pg==='dash')        ltLoadDash();
+  else if (pg==='habits')      ltLoadHabits();
+  else if (pg==='challenges')  ltChTab('my');
   else if (pg==='leaderboard') ltLoadBoard('weekly');
-  else if (pg==='friends') ltFrTab('friends');
+  else if (pg==='friends')     ltFrTab('friends');
 }
 
-function ltOpenModal(id) { document.getElementById(id).style.display='flex'; }
-function ltCloseModal(id) { document.getElementById(id).style.display='none'; }
+function ltOpenModal(id)  { document.getElementById(id).style.display = 'flex'; }
+function ltCloseModal(id) { document.getElementById(id).style.display = 'none'; }
 
 // ── Dashboard ──
 async function ltLoadDash() {
+  if (!_ltUser && _globalUser) { _ltUser = _globalUser; _ltProfile = _globalProfile; }
+  if (!_ltUser) return;
   const h = new Date().getHours();
   const greet = h<12?'Good morning':h<18?'Good afternoon':'Good evening';
-  document.getElementById('lt-greeting').textContent = greet+', '+(_ltProfile?.username||'')+' ⚡';
-  const { data: prof } = await supa.from('lt_profiles').select('*').eq('id',_ltUser.id).single();
-  if (prof) { _ltProfile = prof; }
-  document.getElementById('lt-pts').textContent = _ltProfile?.points||0;
-  document.getElementById('lt-streak').textContent = _ltProfile?.best_streak||0;
-  document.getElementById('lt-user-badge').textContent = (_ltProfile?.points||0)+' pts';
+  const greeting = document.getElementById('lt-greeting');
+  if (greeting) greeting.textContent = greet+', '+(_ltProfile?.username||'')+' ⚡';
+
+  // Refresh profile
+  try {
+    const { data: prof } = await supa.from('lt_profiles').select('*').eq('id',_ltUser.id).single();
+    if (prof) _ltProfile = prof;
+  } catch(e) {}
+
+  const pts    = document.getElementById('lt-pts');
+  const streak = document.getElementById('lt-streak');
+  const badge  = document.getElementById('lt-user-badge');
+  if (pts)    pts.textContent    = _ltProfile?.points||0;
+  if (streak) streak.textContent = _ltProfile?.best_streak||0;
+  if (badge)  badge.textContent  = (_ltProfile?.points||0)+' pts';
+
+  // Habits today
   await ltLoadHabitsData();
   const done = Object.values(_ltCompletions).filter(Boolean).length;
-  document.getElementById('lt-today-stat').textContent = done+'/'+_ltHabits.length;
-  const { data: ranked } = await supa.from('lt_profiles').select('id').order('points',{ascending:false});
-  if (ranked) { const r = ranked.findIndex(x=>x.id===_ltUser.id)+1; document.getElementById('lt-rank').textContent = r>0?'#'+r:'#—'; }
+  const todayStat = document.getElementById('lt-today-stat');
+  if (todayStat) todayStat.textContent = done+'/'+_ltHabits.length;
+
+  // Rank
+  try {
+    const { data: ranked } = await supa.from('lt_profiles').select('id').order('points',{ascending:false});
+    const rankEl = document.getElementById('lt-rank');
+    if (rankEl && ranked) { const r=ranked.findIndex(x=>x.id===_ltUser.id)+1; rankEl.textContent=r>0?'#'+r:'#—'; }
+  } catch(e) {}
+
   // Mini habits
-  const el = document.getElementById('lt-dash-habits');
-  if (!_ltHabits.length) { el.innerHTML = '<div class="lt-empty">No habits yet — <button class="lt-link-btn" onclick="ltPage(\'habits\')">create one</button></div>'; }
-  else el.innerHTML = _ltHabits.slice(0,4).map(h=>ltHabitRowHTML(h,true)).join('');
-  // Mini board
+  const habEl = document.getElementById('lt-dash-habits');
+  if (habEl) {
+    if (!_ltHabits.length) {
+      habEl.innerHTML = '<div class="lt-empty">No habits yet — <button class="lt-link-btn" onclick="ltPage('habits')">create one</button></div>';
+    } else {
+      habEl.innerHTML = _ltHabits.slice(0,4).map(h=>ltHabitRowHTML(h,true)).join('');
+    }
+  }
+
+  // Mini leaderboard
   await ltLoadMiniBoard();
+
   // AI Coach
   const insight = ltAnalyze(_ltHabits, _ltCompletions);
   const aiBox = document.getElementById('lt-ai-coach');
-  if (insight) { document.getElementById('lt-ai-text').textContent = insight; aiBox.style.display='block'; }
-  else aiBox.style.display='none';
+  const aiText = document.getElementById('lt-ai-text');
+  if (aiBox && aiText) { if (insight) { aiText.textContent=insight; aiBox.style.display='block'; } else aiBox.style.display='none'; }
 }
 
 async function ltLoadMiniBoard() {
-  const { data } = await supa.from('lt_profiles').select('username,points,current_streak').order('points',{ascending:false}).limit(5);
-  const el = document.getElementById('lt-dash-board');
-  if (!data?.length) { el.innerHTML = '<div class="lt-empty">No players yet</div>'; return; }
-  el.innerHTML = data.map((u,i) => {
-    const isMe = u.username === _ltProfile?.username;
-    return `<div class="lt-lb-row">
-      <div class="lt-lb-rank" style="color:${i===0?'#ffd700':i===1?'#c0c0c0':i===2?'#cd7f32':isMe?'var(--accent3)':'var(--muted)'}">${i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1)}</div>
-      <div class="lt-lb-avatar" style="background:${ltAvatarColor(u.username)};color:#000;">${ltInitials(u.username)}</div>
-      <div class="lt-lb-info"><div class="lt-lb-name">${u.username}${isMe?'<span class="lt-you">YOU</span>':''}</div><div class="lt-lb-sub">🔥 ${u.current_streak||0} days</div></div>
-      <div class="lt-lb-pts">${u.points||0}</div>
-    </div>`;
-  }).join('');
+  try {
+    const { data } = await supa.from('lt_profiles').select('username,points,current_streak').order('points',{ascending:false}).limit(5);
+    const el = document.getElementById('lt-dash-board');
+    if (!el) return;
+    if (!data?.length) { el.innerHTML='<div class="lt-empty">No players yet</div>'; return; }
+    el.innerHTML = data.map((u,i) => {
+      const isMe = u.username===_ltProfile?.username;
+      return `<div class="lt-lb-row" style="${isMe?'background:rgba(59,255,212,0.04);border-left:3px solid var(--accent3);':''}">
+        <div class="lt-lb-rank" style="color:${i===0?'#ffd700':i===1?'#c0c0c0':i===2?'#cd7f32':isMe?'var(--accent3)':'var(--muted)'}">${i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1)}</div>
+        <div class="lt-lb-avatar" style="background:${ltAvatarColor(u.username)};color:#000;">${ltInitials(u.username)}</div>
+        <div class="lt-lb-info"><div class="lt-lb-name">${u.username}${isMe?'<span class="lt-you">YOU</span>':''}</div><div class="lt-lb-sub">🔥 ${u.current_streak||0} days</div></div>
+        <div class="lt-lb-pts">${u.points||0}</div>
+      </div>`;
+    }).join('');
+  } catch(e) {}
 }
 
-// ── AI analysis ──
 function ltAnalyze(habits, completions) {
   if (!habits.length) return null;
-  const done = Object.values(completions).filter(Boolean).length;
-  const total = habits.length;
-  const pct = Math.round(done/total*100);
-  if (pct===100) return '🔥 Perfect day! All '+total+' habits done. You\'re building unstoppable momentum.';
-  if (pct>=70) return '✅ '+done+'/'+total+' habits done. Great progress — finish strong today!';
-  if (pct>=40) return '⚡ Halfway there — '+‌(total-done)+' habits left. The hardest part is starting.';
-  if (done===0) return '💪 No habits done yet today. Even completing 1 keeps your streak alive.';
-  return '📈 '+done+'/'+total+' done. Keep pushing — consistency beats intensity every time.';
+  const done=Object.values(completions).filter(Boolean).length, total=habits.length;
+  if (done===total && total>0) return '🔥 Perfect day! All '+total+' habits done!';
+  if (done>=total*.7) return '✅ '+done+'/'+total+' done. Great progress — finish strong!';
+  if (done>0) return '⚡ '+done+'/'+total+' done. Keep going!';
+  return '💪 No habits done yet today. Start with just one!';
 }
 
 // ── Habits ──
 async function ltLoadHabitsData() {
-  const { data } = await supa.from('lt_habits').select('*').eq('user_id',_ltUser.id).order('created_at');
-  _ltHabits = data||[];
-  const { data: comps } = await supa.from('lt_completions').select('habit_id,status').eq('user_id',_ltUser.id).eq('date',ltToday());
-  _ltCompletions = {};
-  (comps||[]).forEach(c => { _ltCompletions[c.habit_id] = c.status==='done'; });
+  if (!_ltUser && _globalUser) { _ltUser = _globalUser; _ltProfile = _globalProfile; }
+  if (!_ltUser) return;
+  try {
+    const { data, error } = await supa.from('lt_habits').select('*').eq('user_id',_ltUser.id).order('created_at');
+    if (error) {
+      console.error('[LT] lt_habits error:', error.message);
+      _ltHabits = [];
+      _ltTablesMissing = true;
+      return;
+    }
+    _ltTablesMissing = false;
+    _ltHabits = data||[];
+    const { data: comps, error: compErr } = await supa.from('lt_completions').select('habit_id,status').eq('user_id',_ltUser.id).eq('date',ltToday());
+    _ltCompletions = {};
+    if (!compErr) (comps||[]).forEach(c => { _ltCompletions[c.habit_id] = c.status==='done'; });
+  } catch(e) { console.error('[LT] Error:', e); _ltHabits=[]; _ltCompletions={}; }
 }
+let _ltTablesMissing = false;
 
 async function ltLoadHabits() {
-  await ltLoadHabitsData();
+  if (!_ltUser && _globalUser) { _ltUser = _globalUser; _ltProfile = _globalProfile; }
   const el = document.getElementById('lt-habits-list');
-  if (!_ltHabits.length) { el.innerHTML = '<div class="lt-card"><div class="lt-empty">No habits yet — create your first above</div></div>'; return; }
+  if (!el) { console.error('[LT] lt-habits-list not found'); return; }
+  if (!_ltUser) {
+    el.innerHTML = '<div class="lt-card"><div class="lt-empty" style="padding:32px;text-align:center;">Please sign in to view habits.</div></div>';
+    return;
+  }
+  el.innerHTML = '<div class="lt-card"><div class="lt-empty" style="padding:20px;text-align:center;color:var(--accent3);">⏳ Loading habits...</div></div>';
+  if (_ltTablesMissing) {
+    el.innerHTML = `<div class="lt-card"><div style="padding:24px;text-align:center;">
+      <div style="font-size:32px;margin-bottom:12px;">⚠️</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--accent);margin-bottom:8px;">Database Setup Required</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.7;">Run the SQL setup in Supabase to use LifeTrack.<br>Go to: <span style="color:var(--accent3);">supabase.com/dashboard/project/horltkgbjgybhrovaddp/editor</span></div>
+    </div></div>`;
+    return;
+  }
+  if (!_ltHabits.length) {
+    el.innerHTML = '<div class="lt-card"><div class="lt-empty" style="padding:32px;text-align:center;color:var(--muted);">No habits yet — press <strong style="color:var(--accent3);">+ New Habit</strong> above to start</div></div>';
+    return;
+  }
   el.innerHTML = '<div class="lt-card">'+_ltHabits.map(h=>ltHabitRowHTML(h,false)).join('')+'</div>';
 }
 
@@ -3316,7 +3201,7 @@ function ltHabitRowHTML(h, mini) {
   const done = _ltCompletions[h.id];
   const pts = LT_POINTS[h.difficulty]||10;
   return `<div class="lt-habit-row">
-    <div class="lt-check ${done?'done':''}" onclick="ltToggleHabit('${h.id}','${h.difficulty}',${h.requires_proof})">${done?'✓':''}</div>
+    <div class="lt-check ${done?'done':''}" onclick="ltToggleHabit('${h.id}','${h.difficulty}',${!!h.requires_proof})">${done?'✓':''}</div>
     <div class="lt-habit-info">
       <div class="lt-habit-name" style="${done?'text-decoration:line-through;opacity:0.5;':''}">${h.name}</div>
       <div class="lt-habit-meta">
@@ -3335,14 +3220,22 @@ function ltHabitRowHTML(h, mini) {
 }
 
 async function ltToggleHabit(habitId, difficulty, requiresProof) {
+  if (!_ltUser && _globalUser) { _ltUser = _globalUser; _ltProfile = _globalProfile; }
+  if (!_ltUser) return;
   const done = _ltCompletions[habitId];
   if (done) {
-    await supa.from('lt_completions').delete().eq('user_id',_ltUser.id).eq('habit_id',habitId).eq('date',ltToday());
-    _ltCompletions[habitId] = false;
-    await ltUpdatePoints(-(LT_POINTS[difficulty]||10));
-    ltToast('Unmarked — points removed');
+    try {
+      await supa.from('lt_completions').delete().eq('user_id',_ltUser.id).eq('habit_id',habitId).eq('date',ltToday());
+      _ltCompletions[habitId] = false;
+      await ltUpdatePoints(-(LT_POINTS[difficulty]||10));
+      ltToast('Unmarked — points removed');
+    } catch(e) { ltToast('Error: '+e.message); return; }
   } else {
-    if (requiresProof) { document.getElementById('lt-proof-habit-id').value = habitId; ltOpenModal('lt-proof-modal'); return; }
+    if (requiresProof) {
+      document.getElementById('lt-proof-habit-id').value = habitId;
+      ltOpenModal('lt-proof-modal');
+      return;
+    }
     await ltCompleteHabit(habitId, difficulty);
   }
   await ltLoadHabitsData();
@@ -3350,27 +3243,33 @@ async function ltToggleHabit(habitId, difficulty, requiresProof) {
 }
 
 async function ltCompleteHabit(habitId, difficulty) {
-  await supa.from('lt_completions').upsert({ user_id:_ltUser.id, habit_id:habitId, date:ltToday(), status:'done' }, { onConflict:'user_id,habit_id,date' });
-  const habit = _ltHabits.find(h=>h.id===habitId);
-  const newStreak = (habit?.streak||0)+1;
-  await supa.from('lt_habits').update({ streak:newStreak, last_completed:ltToday() }).eq('id',habitId);
-  await supa.from('lt_profiles').update({ best_streak:Math.max(newStreak,_ltProfile?.best_streak||0), current_streak:newStreak }).eq('id',_ltUser.id);
-  await ltUpdatePoints(LT_POINTS[difficulty]||10);
-  _ltCompletions[habitId] = true;
-  ltToast('✓ Done! +'+(LT_POINTS[difficulty]||10)+' pts 🎉');
+  if (!_ltUser && _globalUser) { _ltUser = _globalUser; _ltProfile = _globalProfile; }
+  try {
+    await supa.from('lt_completions').upsert({ user_id:_ltUser.id, habit_id:habitId, date:ltToday(), status:'done' }, { onConflict:'user_id,habit_id,date' });
+    const habit = _ltHabits.find(h=>h.id===habitId);
+    const newStreak = (habit?.streak||0)+1;
+    await supa.from('lt_habits').update({ streak:newStreak, last_completed:ltToday() }).eq('id',habitId);
+    try {
+      await supa.from('lt_profiles').update({ best_streak:Math.max(newStreak,_ltProfile?.best_streak||0), current_streak:newStreak }).eq('id',_ltUser.id);
+    } catch(e) {}
+    await ltUpdatePoints(LT_POINTS[difficulty]||10);
+    _ltCompletions[habitId] = true;
+    ltToast('✓ Done! +'+(LT_POINTS[difficulty]||10)+' pts 🎉');
+  } catch(e) { ltToast('Error: '+e.message); }
 }
 
 async function ltUpdatePoints(delta) {
   const cur = _ltProfile?.points||0;
   const np = Math.max(0, cur+delta);
-  await supa.from('lt_profiles').update({ points:np }).eq('id',_ltUser.id);
-  _ltProfile = {..._ltProfile, points:np};
-  document.getElementById('lt-user-badge').textContent = np+' pts';
-  document.getElementById('lt-pts').textContent = np;
-  // Sync topbar points
-  const topPts = document.getElementById('topbar-points');
-  if (topPts) topPts.textContent = np+' pts';
+  try { await supa.from('lt_profiles').update({ points:np }).eq('id',_ltUser.id); } catch(e) {}
+  if (_ltProfile) _ltProfile.points = np;
   if (_globalProfile) _globalProfile.points = np;
+  const badge = document.getElementById('lt-user-badge');
+  const pts   = document.getElementById('lt-pts');
+  const topPts = document.getElementById('topbar-points');
+  if (badge)  badge.textContent  = np+' pts';
+  if (pts)    pts.textContent    = np;
+  if (topPts) topPts.textContent = np+' pts';
 }
 
 function ltOpenHabitModal() {
@@ -3395,103 +3294,124 @@ function ltEditHabit(id) {
 }
 
 async function ltSaveHabit() {
-  const id   = document.getElementById('lt-habit-edit-id').value;
-  const name = document.getElementById('lt-habit-name').value.trim();
-  const desc = document.getElementById('lt-habit-desc').value.trim();
-  const diff = document.getElementById('lt-habit-diff').value;
+  if (!_ltUser && _globalUser) { _ltUser = _globalUser; _ltProfile = _globalProfile; }
+  const id    = document.getElementById('lt-habit-edit-id').value;
+  const name  = document.getElementById('lt-habit-name').value.trim();
+  const desc  = document.getElementById('lt-habit-desc').value.trim();
+  const diff  = document.getElementById('lt-habit-diff').value;
   const proof = document.getElementById('lt-habit-proof').value==='true';
   if (!name) { ltToast('Enter a habit name'); return; }
-  if (id) await supa.from('lt_habits').update({name,description:desc,difficulty:diff,requires_proof:proof}).eq('id',id);
-  else await supa.from('lt_habits').insert({user_id:_ltUser.id,name,description:desc,difficulty:diff,requires_proof:proof,streak:0});
-  ltCloseModal('lt-habit-modal');
-  ltToast(id?'Habit updated ✓':'Habit created ✓');
-  await ltLoadHabits();
+  try {
+    if (id) await supa.from('lt_habits').update({name,description:desc,difficulty:diff,requires_proof:proof}).eq('id',id);
+    else    await supa.from('lt_habits').insert({user_id:_ltUser.id,name,description:desc,difficulty:diff,requires_proof:proof,streak:0});
+    ltCloseModal('lt-habit-modal');
+    ltToast(id?'Habit updated ✓':'Habit created ✓');
+    await ltLoadHabits();
+  } catch(e) { ltToast('Error: '+e.message); }
 }
 
 async function ltDeleteHabit(id) {
-  if (!confirm('Delete habit? Streak will be lost.')) return;
-  await supa.from('lt_habits').delete().eq('id',id);
-  await supa.from('lt_completions').delete().eq('habit_id',id);
-  ltToast('Deleted');
-  await ltLoadHabits();
+  if (!confirm('Delete this habit? Your streak will be lost.')) return;
+  try {
+    await supa.from('lt_habits').delete().eq('id',id);
+    await supa.from('lt_completions').delete().eq('habit_id',id);
+    ltToast('Deleted');
+    await ltLoadHabits();
+  } catch(e) { ltToast('Error: '+e.message); }
 }
 
-// Proof
 document.addEventListener('change', function(e) {
   if (e.target.id==='lt-proof-file') {
-    const f = e.target.files[0];
+    const f=e.target.files[0];
     if (f) { const r=new FileReader(); r.onload=ev=>{document.getElementById('lt-proof-img').src=ev.target.result;document.getElementById('lt-proof-preview').style.display='block';}; r.readAsDataURL(f); }
   }
 });
 
 async function ltSubmitProof() {
   const habitId = document.getElementById('lt-proof-habit-id').value;
-  const file = document.getElementById('lt-proof-file').files[0];
+  const file    = document.getElementById('lt-proof-file').files[0];
   if (!file) { ltToast('Select an image'); return; }
   const habit = _ltHabits.find(h=>h.id===habitId);
   const fname = _ltUser.id+'/'+habitId+'_'+ltToday()+'.'+file.name.split('.').pop();
-  const { error } = await supa.storage.from('proofs').upload(fname, file, {upsert:true});
-  if (error) { ltToast('Upload failed'); return; }
-  const { data: urlData } = supa.storage.from('proofs').getPublicUrl(fname);
-  await supa.from('lt_proofs').insert({user_id:_ltUser.id,habit_id:habitId,date:ltToday(),image_url:urlData.publicUrl,status:'pending'});
+  try {
+    const { error } = await supa.storage.from('proofs').upload(fname, file, {upsert:true});
+    if (error) { ltToast('Upload failed: '+error.message); return; }
+    const { data: urlData } = supa.storage.from('proofs').getPublicUrl(fname);
+    await supa.from('lt_proofs').insert({user_id:_ltUser.id,habit_id:habitId,date:ltToday(),image_url:urlData.publicUrl,status:'pending'});
+  } catch(e) {}
   await ltCompleteHabit(habitId, habit?.difficulty||'medium');
   ltCloseModal('lt-proof-modal');
   document.getElementById('lt-proof-file').value='';
   document.getElementById('lt-proof-preview').style.display='none';
-  await ltLoadHabitsData(); await ltLoadHabits();
+  await ltLoadHabitsData();
+  await ltLoadHabits();
 }
 
 // ── Challenges ──
 function ltChTab(tab) {
-  ['my','invites','public'].forEach(t => {
-    document.getElementById('lt-challenges-'+t).style.display=t===tab?'block':'none';
-    document.getElementById('lt-ch-'+t).classList.toggle('active',t===tab);
+  ['my','invites','public'].forEach(t=>{
+    const el = document.getElementById('lt-challenges-'+t);
+    if (el) el.style.display = t===tab?'block':'none';
+    const btn = document.getElementById('lt-ch-'+t);
+    if (btn) btn.classList.toggle('active',t===tab);
   });
-  if (tab==='my') ltLoadMyChallenges();
+  if      (tab==='my')      ltLoadMyChallenges();
   else if (tab==='invites') ltLoadInvites();
-  else if (tab==='public') ltLoadPublicChallenges();
+  else if (tab==='public')  ltLoadPublicChallenges();
 }
 
 async function ltLoadMyChallenges() {
-  const { data } = await supa.from('lt_challenges').select('*').eq('creator_id',_ltUser.id).order('created_at',{ascending:false});
+  if (!_ltUser && _globalUser) { _ltUser = _globalUser; _ltProfile = _globalProfile; }
   const el = document.getElementById('lt-challenges-my');
-  if (!data?.length) { el.innerHTML='<div class="lt-card"><div class="lt-empty">No challenges yet</div></div>'; return; }
-  el.innerHTML='<div class="lt-card">'+data.map(ch=>ltChRowHTML(ch,'full')).join('')+'</div>';
+  if (!el || !_ltUser) return;
+  try {
+    const { data } = await supa.from('lt_challenges').select('*').eq('creator_id',_ltUser.id).order('created_at',{ascending:false});
+    if (!data?.length) { el.innerHTML='<div class="lt-card"><div class="lt-empty" style="padding:32px;text-align:center;color:var(--muted);">No challenges yet — press <strong style="color:#a78bfa;">+ New</strong> above</div></div>'; return; }
+    el.innerHTML='<div class="lt-card">'+data.map(ch=>ltChRowHTML(ch,'full')).join('')+'</div>';
+  } catch(e) { el.innerHTML='<div class="lt-card"><div class="lt-empty" style="padding:24px;text-align:center;color:var(--accent2);">Run SQL setup in Supabase first</div></div>'; }
 }
 
 async function ltLoadInvites() {
-  const { data } = await supa.from('lt_challenge_invites').select('*,lt_challenges(*)').eq('invitee_id',_ltUser.id).eq('status','pending');
+  if (!_ltUser && _globalUser) { _ltUser = _globalUser; _ltProfile = _globalProfile; }
   const el = document.getElementById('lt-challenges-invites');
-  const cnt = data?.length||0;
-  const badge = document.getElementById('lt-invite-badge');
-  badge.style.display=cnt>0?'inline':'none'; badge.textContent=cnt;
-  if (!cnt) { el.innerHTML='<div class="lt-card"><div class="lt-empty">No invites</div></div>'; return; }
-  el.innerHTML='<div class="lt-card">'+data.map(inv=>`<div class="lt-ch-row">
-    <div class="lt-ch-head"><div class="lt-ch-title">${inv.lt_challenges?.title||'Challenge'}</div><span class="lt-status lt-status-invited">INVITED</span></div>
-    <div class="lt-ch-meta">${inv.lt_challenges?.goal_description||''}</div>
-    <div class="lt-ch-actions">
-      <button class="lt-btn-accept" onclick="ltRespondInvite('${inv.id}','accepted')">Accept ✓</button>
-      <button class="lt-btn-reject" onclick="ltRespondInvite('${inv.id}','declined')">Decline</button>
-    </div></div>`).join('')+'</div>';
+  if (!el || !_ltUser) return;
+  try {
+    const { data } = await supa.from('lt_challenge_invites').select('*,lt_challenges(*)').eq('invitee_id',_ltUser.id).eq('status','pending');
+    const cnt=data?.length||0;
+    const badge=document.getElementById('lt-invite-badge');
+    if (badge) { badge.style.display=cnt>0?'inline':'none'; badge.textContent=cnt; }
+    if (!cnt) { el.innerHTML='<div class="lt-card"><div class="lt-empty" style="padding:24px;text-align:center;color:var(--muted);">No invites</div></div>'; return; }
+    el.innerHTML='<div class="lt-card">'+data.map(inv=>`<div class="lt-ch-row">
+      <div class="lt-ch-head"><div class="lt-ch-title">${inv.lt_challenges?.title||'Challenge'}</div><span class="lt-status lt-status-invited">INVITED</span></div>
+      <div class="lt-ch-meta">${inv.lt_challenges?.goal_description||''}</div>
+      <div class="lt-ch-actions">
+        <button class="lt-btn-accept" onclick="ltRespondInvite('${inv.id}','accepted')">Accept ✓</button>
+        <button class="lt-btn-reject" onclick="ltRespondInvite('${inv.id}','declined')">Decline</button>
+      </div></div>`).join('')+'</div>';
+  } catch(e) {}
 }
 
 async function ltLoadPublicChallenges() {
-  const { data } = await supa.from('lt_challenges').select('*,lt_profiles(username)').eq('is_public',true).eq('status','active').limit(20);
+  if (!_ltUser && _globalUser) { _ltUser = _globalUser; _ltProfile = _globalProfile; }
   const el = document.getElementById('lt-challenges-public');
-  if (!data?.length) { el.innerHTML='<div class="lt-card"><div class="lt-empty">No public challenges</div></div>'; return; }
-  el.innerHTML='<div class="lt-card">'+data.map(ch=>`<div class="lt-ch-row">
-    <div class="lt-ch-head"><div class="lt-ch-title">${ch.title}</div><span class="lt-status lt-status-active">ACTIVE</span></div>
-    <div class="lt-ch-meta">By ${ch.lt_profiles?.username||'?'} · ${ch.goal_description} · ${ch.duration_days}d</div>
-    <div class="lt-ch-actions"><button class="lt-btn-primary" onclick="ltJoinChallenge('${ch.id}')">Join ⚔️</button></div>
-  </div>`).join('')+'</div>';
+  if (!el || !_ltUser) return;
+  try {
+    const { data } = await supa.from('lt_challenges').select('*,lt_profiles(username)').eq('is_public',true).eq('status','active').limit(20);
+    if (!data?.length) { el.innerHTML='<div class="lt-card"><div class="lt-empty" style="padding:24px;text-align:center;color:var(--muted);">No public challenges yet</div></div>'; return; }
+    el.innerHTML='<div class="lt-card">'+data.map(ch=>`<div class="lt-ch-row">
+      <div class="lt-ch-head"><div class="lt-ch-title">${ch.title}</div><span class="lt-status lt-status-active">ACTIVE</span></div>
+      <div class="lt-ch-meta">By ${ch.lt_profiles?.username||'?'} · ${ch.goal_description} · ${ch.duration_days}d</div>
+      <div class="lt-ch-actions"><button class="lt-btn-primary" onclick="ltJoinChallenge('${ch.id}')">Join ⚔️</button></div>
+    </div>`).join('')+'</div>';
+  } catch(e) {}
 }
 
 function ltChRowHTML(ch, mode) {
-  const pct = Math.min(((ch.current_count||0)/(ch.target_count||1))*100,100);
-  const daysLeft = ch.end_date?Math.max(0,Math.ceil((new Date(ch.end_date)-new Date())/86400000)):'?';
+  const pct=Math.min(((ch.current_count||0)/(ch.target_count||1))*100,100);
+  const daysLeft=ch.end_date?Math.max(0,Math.ceil((new Date(ch.end_date)-new Date())/86400000)):'?';
   return `<div class="lt-ch-row">
     <div class="lt-ch-head"><div class="lt-ch-title">${ch.title}</div><span class="lt-status lt-status-${ch.status==='active'?'active':'done'}">${(ch.status||'active').toUpperCase()}</span></div>
-    <div class="lt-ch-meta">${ch.goal_description} · ${daysLeft} days left</div>
+    <div class="lt-ch-meta">${ch.goal_description||''} · ${daysLeft} days left</div>
     <div class="lt-ch-progress">
       <div class="lt-ch-count">${ch.current_count||0}/${ch.target_count}</div>
       <div style="flex:1;"><div class="lt-ch-bar"><div class="lt-ch-bar-fill" style="width:${pct}%"></div></div></div>
@@ -3514,157 +3434,185 @@ function ltOpenChallengeModal() {
 }
 
 async function ltSaveChallenge() {
-  const title = document.getElementById('lt-ch-title').value.trim();
-  const goal  = document.getElementById('lt-ch-goal').value.trim();
-  const dur   = parseInt(document.getElementById('lt-ch-duration').value)||30;
-  const tgt   = parseInt(document.getElementById('lt-ch-target').value)||20;
+  if (!_ltUser && _globalUser) { _ltUser = _globalUser; _ltProfile = _globalProfile; }
+  const title=document.getElementById('lt-ch-title').value.trim();
+  const goal =document.getElementById('lt-ch-goal').value.trim();
+  const dur  =parseInt(document.getElementById('lt-ch-duration').value)||30;
+  const tgt  =parseInt(document.getElementById('lt-ch-target').value)||20;
   if (!title) { ltToast('Enter a title'); return; }
-  const end = new Date(); end.setDate(end.getDate()+dur);
-  await supa.from('lt_challenges').insert({creator_id:_ltUser.id,title,goal_description:goal,duration_days:dur,target_count:tgt,current_count:0,start_date:ltToday(),end_date:end.toISOString().split('T')[0],status:'active',is_public:true});
-  ltCloseModal('lt-challenge-modal');
-  ltToast('Challenge created ⚔️');
-  ltLoadMyChallenges();
+  const end=new Date(); end.setDate(end.getDate()+dur);
+  try {
+    await supa.from('lt_challenges').insert({creator_id:_ltUser.id,title,goal_description:goal,duration_days:dur,target_count:tgt,current_count:0,start_date:ltToday(),end_date:end.toISOString().split('T')[0],status:'active',is_public:true});
+    ltCloseModal('lt-challenge-modal');
+    ltToast('Challenge created ⚔️');
+    ltLoadMyChallenges();
+  } catch(e) { ltToast('Error: '+e.message); }
 }
 
 async function ltLogProgress(id) {
-  const { data:ch } = await supa.from('lt_challenges').select('*').eq('id',id).single();
-  if (!ch) return;
-  const n = (ch.current_count||0)+1;
-  const status = n>=ch.target_count?'completed':'active';
-  await supa.from('lt_challenges').update({current_count:n,status}).eq('id',id);
-  if (status==='completed') { ltToast('🏆 Challenge complete!'); await ltUpdatePoints(100); }
-  else ltToast('Progress: '+n+'/'+ch.target_count);
-  ltLoadMyChallenges();
+  try {
+    const {data:ch}=await supa.from('lt_challenges').select('*').eq('id',id).single();
+    if (!ch) return;
+    const n=(ch.current_count||0)+1;
+    const status=n>=ch.target_count?'completed':'active';
+    await supa.from('lt_challenges').update({current_count:n,status}).eq('id',id);
+    if (status==='completed') { ltToast('🏆 Challenge complete!'); await ltUpdatePoints(100); }
+    else ltToast('Progress: '+n+'/'+ch.target_count);
+    ltLoadMyChallenges();
+  } catch(e) { ltToast('Error: '+e.message); }
 }
 
 async function ltDeleteChallenge(id) {
   if (!confirm('Delete challenge?')) return;
-  await supa.from('lt_challenges').delete().eq('id',id);
-  ltToast('Deleted');
-  ltLoadMyChallenges();
+  try { await supa.from('lt_challenges').delete().eq('id',id); ltToast('Deleted'); ltLoadMyChallenges(); }
+  catch(e) { ltToast('Error: '+e.message); }
 }
 
 async function ltJoinChallenge(id) {
-  await supa.from('lt_challenge_invites').insert({challenge_id:id,invitee_id:_ltUser.id,status:'accepted'});
-  ltToast('Joined! ⚔️'); ltChTab('public');
+  try { await supa.from('lt_challenge_invites').insert({challenge_id:id,invitee_id:_ltUser.id,status:'accepted'}); ltToast('Joined! ⚔️'); ltChTab('public'); }
+  catch(e) { ltToast('Error: '+e.message); }
 }
 
 async function ltRespondInvite(id, response) {
-  await supa.from('lt_challenge_invites').update({status:response}).eq('id',id);
-  ltToast(response==='accepted'?'Accepted! ⚔️':'Declined'); ltLoadInvites();
+  try { await supa.from('lt_challenge_invites').update({status:response}).eq('id',id); ltToast(response==='accepted'?'Accepted! ⚔️':'Declined'); ltLoadInvites(); }
+  catch(e) { ltToast('Error: '+e.message); }
 }
 
 async function ltInviteToChallenge(id) {
-  const u = prompt('Friend username:'); if (!u) return;
-  const { data:fr } = await supa.from('lt_profiles').select('id').eq('username',u).maybeSingle();
-  if (!fr) { ltToast('User not found'); return; }
-  await supa.from('lt_challenge_invites').insert({challenge_id:id,inviter_id:_ltUser.id,invitee_id:fr.id,status:'pending'});
-  ltToast('Invite sent ✓');
+  const u=prompt('Friend username:'); if (!u) return;
+  try {
+    const {data:fr}=await supa.from('lt_profiles').select('id').eq('username',u).maybeSingle();
+    if (!fr) { ltToast('User not found'); return; }
+    await supa.from('lt_challenge_invites').insert({challenge_id:id,inviter_id:_ltUser.id,invitee_id:fr.id,status:'pending'});
+    ltToast('Invite sent ✓');
+  } catch(e) { ltToast('Error: '+e.message); }
 }
 
 // ── Leaderboard ──
 async function ltLoadBoard(period) {
-  ['weekly','monthly','alltime'].forEach(t=>document.getElementById('lt-lb-'+t.replace('weekly','week').replace('monthly','month').replace('alltime','all')).classList.toggle('active',t===period));
-  const { data } = await supa.from('lt_profiles').select('username,points,current_streak,best_streak').order('points',{ascending:false}).limit(50);
+  if (!_ltUser && _globalUser) { _ltUser = _globalUser; _ltProfile = _globalProfile; }
+  ['weekly','monthly','alltime'].forEach(t => {
+    const id = 'lt-lb-'+{weekly:'week',monthly:'month',alltime:'all'}[t];
+    const btn = document.getElementById(id);
+    if (btn) btn.classList.toggle('active', t===period);
+  });
   const el = document.getElementById('lt-board-list');
-  if (!data?.length) { el.innerHTML='<div class="lt-card"><div class="lt-empty">No players yet</div></div>'; return; }
-  el.innerHTML='<div class="lt-card">'+data.map((u,i)=>{
-    const isMe = u.username===_ltProfile?.username;
-    return `<div class="lt-lb-row" style="${isMe?'background:rgba(59,255,212,0.04);border-left:3px solid var(--accent3);':''}">
-      <div class="lt-lb-rank" style="color:${i===0?'#ffd700':i===1?'#c0c0c0':i===2?'#cd7f32':isMe?'var(--accent3)':'var(--muted)'}">${i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1)}</div>
-      <div class="lt-lb-avatar" style="background:${ltAvatarColor(u.username)};color:#000;">${ltInitials(u.username)}</div>
-      <div class="lt-lb-info"><div class="lt-lb-name">${u.username}${isMe?'<span class="lt-you">YOU</span>':''}</div><div class="lt-lb-sub">🔥 ${u.current_streak||0} streak · Best ${u.best_streak||0}</div></div>
-      <div class="lt-lb-pts">${u.points||0}<span style="font-size:11px;color:var(--muted);"> pts</span></div>
-    </div>`;
-  }).join('')+'</div>';
+  if (!el || !_ltUser) return;
+  try {
+    const {data}=await supa.from('lt_profiles').select('username,points,current_streak,best_streak').order('points',{ascending:false}).limit(50);
+    if (!data?.length) { el.innerHTML='<div class="lt-card"><div class="lt-empty" style="padding:24px;text-align:center;color:var(--muted);">No players yet</div></div>'; return; }
+    el.innerHTML='<div class="lt-card">'+data.map((u,i)=>{
+      const isMe=u.username===_ltProfile?.username;
+      return `<div class="lt-lb-row" style="${isMe?'background:rgba(59,255,212,0.04);border-left:3px solid var(--accent3);':''}">
+        <div class="lt-lb-rank" style="color:${i===0?'#ffd700':i===1?'#c0c0c0':i===2?'#cd7f32':isMe?'var(--accent3)':'var(--muted)'}">${i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1)}</div>
+        <div class="lt-lb-avatar" style="background:${ltAvatarColor(u.username)};color:#000;">${ltInitials(u.username)}</div>
+        <div class="lt-lb-info"><div class="lt-lb-name">${u.username}${isMe?'<span class="lt-you">YOU</span>':''}</div><div class="lt-lb-sub">🔥 ${u.current_streak||0} days · Best ${u.best_streak||0}</div></div>
+        <div class="lt-lb-pts">${u.points||0}<span style="font-size:11px;color:var(--muted);"> pts</span></div>
+      </div>`;
+    }).join('')+'</div>';
+  } catch(e) { el.innerHTML='<div class="lt-card"><div class="lt-empty" style="padding:24px;color:var(--accent2);">Run SQL setup in Supabase first</div></div>'; }
 }
 
 // ── Friends ──
 function ltFrTab(tab) {
   ['friends','requests','sent'].forEach(t=>{
-    document.getElementById('lt-'+t+'-list').style.display=t===tab?'block':'none';
-    document.getElementById('lt-fr-'+t).classList.toggle('active',t===tab);
+    const el=document.getElementById('lt-'+t+'-list');
+    if(el) el.style.display=t===tab?'block':'none';
+    const btn=document.getElementById('lt-fr-'+t);
+    if(btn) btn.classList.toggle('active',t===tab);
   });
-  if (tab==='friends') ltLoadFriends();
+  if      (tab==='friends')  ltLoadFriends();
   else if (tab==='requests') ltLoadRequests();
-  else if (tab==='sent') ltLoadSent();
+  else if (tab==='sent')     ltLoadSent();
 }
 
 async function ltSendFriendReq() {
-  const u = document.getElementById('lt-friend-input').value.trim();
-  const msg = document.getElementById('lt-friend-msg');
-  if (!u) { msg.textContent='Enter username'; msg.className='auth-msg err'; return; }
-  if (u===_ltProfile?.username) { msg.textContent='Cannot add yourself'; msg.className='auth-msg err'; return; }
-  const { data:fr } = await supa.from('lt_profiles').select('id').eq('username',u).maybeSingle();
-  if (!fr) { msg.textContent='User "'+u+'" not found'; msg.className='auth-msg err'; return; }
-  await supa.from('lt_friendships').insert({requester_id:_ltUser.id,recipient_id:fr.id,status:'pending'});
-  msg.textContent='✓ Request sent to '+u; msg.className='auth-msg ok';
-  document.getElementById('lt-friend-input').value='';
-  setTimeout(()=>{msg.textContent='';},3000);
+  if (!_ltUser && _globalUser) { _ltUser = _globalUser; _ltProfile = _globalProfile; }
+  const u=(document.getElementById('lt-friend-input').value||'').trim();
+  const msg=document.getElementById('lt-friend-msg');
+  if (!u) { msg.textContent='Enter username'; msg.style.color='#ff4f3b'; return; }
+  if (u===_ltProfile?.username) { msg.textContent='Cannot add yourself'; msg.style.color='#ff4f3b'; return; }
+  try {
+    const {data:fr}=await supa.from('lt_profiles').select('id').eq('username',u).maybeSingle();
+    if (!fr) { msg.textContent='User "'+u+'" not found'; msg.style.color='#ff4f3b'; return; }
+    await supa.from('lt_friendships').insert({requester_id:_ltUser.id,recipient_id:fr.id,status:'pending'});
+    msg.textContent='✓ Request sent to '+u; msg.style.color='#3bffd4';
+    document.getElementById('lt-friend-input').value='';
+    setTimeout(()=>{msg.textContent='';},3000);
+  } catch(e) { msg.textContent='Error: '+e.message; msg.style.color='#ff4f3b'; }
 }
 
 async function ltLoadFriends() {
-  const { data } = await supa.from('lt_friendships')
-    .select('*,req:lt_profiles!lt_friendships_requester_id_fkey(username,points,current_streak),rec:lt_profiles!lt_friendships_recipient_id_fkey(username,points,current_streak)')
-    .or('requester_id.eq.'+_ltUser.id+',recipient_id.eq.'+_ltUser.id).eq('status','accepted');
-  const el = document.getElementById('lt-friends-list');
-  if (!data?.length) { el.innerHTML='<div class="lt-card"><div class="lt-empty">No friends yet</div></div>'; return; }
-  const friends = data.map(f=>f.requester_id===_ltUser.id?f.rec:f.req).filter(Boolean);
-  el.innerHTML='<div class="lt-card">'+friends.map(f=>`<div class="lt-fr-row">
-    <div class="lt-fr-avatar" style="background:${ltAvatarColor(f.username)};color:#000;">${ltInitials(f.username)}</div>
-    <div class="lt-fr-info"><div class="lt-fr-name">${f.username}</div><div class="lt-fr-sub">${f.points||0} pts · 🔥 ${f.current_streak||0} days</div></div>
-    <div class="lt-fr-actions"><button class="lt-btn-sm" onclick="ltChallengeFriend()">⚔️</button></div>
-  </div>`).join('')+'</div>';
+  if (!_ltUser && _globalUser) { _ltUser = _globalUser; _ltProfile = _globalProfile; }
+  const el=document.getElementById('lt-friends-list');
+  if (!el || !_ltUser) return;
+  try {
+    const {data}=await supa.from('lt_friendships')
+      .select('*,req:lt_profiles!lt_friendships_requester_id_fkey(username,points,current_streak),rec:lt_profiles!lt_friendships_recipient_id_fkey(username,points,current_streak)')
+      .or('requester_id.eq.'+_ltUser.id+',recipient_id.eq.'+_ltUser.id).eq('status','accepted');
+    if (!data?.length) { el.innerHTML='<div class="lt-card"><div class="lt-empty" style="padding:24px;text-align:center;color:var(--muted);">No friends yet — search by username above</div></div>'; return; }
+    const friends=data.map(f=>f.requester_id===_ltUser.id?f.rec:f.req).filter(Boolean);
+    el.innerHTML='<div class="lt-card">'+friends.map(f=>`<div class="lt-fr-row">
+      <div class="lt-fr-avatar" style="background:${ltAvatarColor(f.username)};color:#000;">${ltInitials(f.username)}</div>
+      <div class="lt-fr-info"><div class="lt-fr-name">${f.username}</div><div class="lt-fr-sub">${f.points||0} pts · 🔥 ${f.current_streak||0} days</div></div>
+      <div class="lt-fr-actions"><button class="lt-btn-sm" onclick="ltChallengeFriend()">⚔️ Challenge</button></div>
+    </div>`).join('')+'</div>';
+  } catch(e) { el.innerHTML='<div class="lt-card"><div class="lt-empty" style="padding:24px;color:var(--accent2);">Run SQL setup in Supabase first</div></div>'; }
 }
 
 async function ltLoadRequests() {
-  const { data } = await supa.from('lt_friendships')
-    .select('*,req:lt_profiles!lt_friendships_requester_id_fkey(username,points)')
-    .eq('recipient_id',_ltUser.id).eq('status','pending');
-  const el = document.getElementById('lt-requests-list');
-  const cnt = data?.length||0;
-  const badge = document.getElementById('lt-req-badge');
-  badge.style.display=cnt>0?'inline':'none'; badge.textContent=cnt;
-  if (!cnt) { el.innerHTML='<div class="lt-card"><div class="lt-empty">No requests</div></div>'; return; }
-  el.innerHTML='<div class="lt-card">'+data.map(f=>`<div class="lt-fr-row">
-    <div class="lt-fr-avatar" style="background:${ltAvatarColor(f.req.username)};color:#000;">${ltInitials(f.req.username)}</div>
-    <div class="lt-fr-info"><div class="lt-fr-name">${f.req.username}</div><div class="lt-fr-sub">${f.req.points||0} pts</div></div>
-    <div class="lt-fr-actions">
-      <button class="lt-btn-accept" onclick="ltRespondFriend('${f.id}','accepted')">✓</button>
-      <button class="lt-btn-reject" onclick="ltRespondFriend('${f.id}','declined')">✕</button>
-    </div></div>`).join('')+'</div>';
+  if (!_ltUser && _globalUser) { _ltUser = _globalUser; _ltProfile = _globalProfile; }
+  const el=document.getElementById('lt-requests-list');
+  if (!el || !_ltUser) return;
+  try {
+    const {data}=await supa.from('lt_friendships')
+      .select('*,req:lt_profiles!lt_friendships_requester_id_fkey(username,points)')
+      .eq('recipient_id',_ltUser.id).eq('status','pending');
+    const cnt=data?.length||0;
+    const badge=document.getElementById('lt-req-badge');
+    if(badge){badge.style.display=cnt>0?'inline':'none';badge.textContent=cnt;}
+    if (!cnt) { el.innerHTML='<div class="lt-card"><div class="lt-empty" style="padding:24px;text-align:center;color:var(--muted);">No pending requests</div></div>'; return; }
+    el.innerHTML='<div class="lt-card">'+data.map(f=>`<div class="lt-fr-row">
+      <div class="lt-fr-avatar" style="background:${ltAvatarColor(f.req.username)};color:#000;">${ltInitials(f.req.username)}</div>
+      <div class="lt-fr-info"><div class="lt-fr-name">${f.req.username}</div><div class="lt-fr-sub">${f.req.points||0} pts</div></div>
+      <div class="lt-fr-actions">
+        <button class="lt-btn-accept" onclick="ltRespondFriend('${f.id}','accepted')">✓</button>
+        <button class="lt-btn-reject" onclick="ltRespondFriend('${f.id}','declined')">✕</button>
+      </div></div>`).join('')+'</div>';
+  } catch(e) {}
 }
 
 async function ltLoadSent() {
-  const { data } = await supa.from('lt_friendships')
-    .select('*,rec:lt_profiles!lt_friendships_recipient_id_fkey(username)')
-    .eq('requester_id',_ltUser.id).eq('status','pending');
-  const el = document.getElementById('lt-sent-list');
-  if (!data?.length) { el.innerHTML='<div class="lt-card"><div class="lt-empty">No sent requests</div></div>'; return; }
-  el.innerHTML='<div class="lt-card">'+data.map(f=>`<div class="lt-fr-row">
-    <div class="lt-fr-avatar" style="background:${ltAvatarColor(f.rec.username)};color:#000;">${ltInitials(f.rec.username)}</div>
-    <div class="lt-fr-info"><div class="lt-fr-name">${f.rec.username}</div><div class="lt-fr-sub">Pending...</div></div>
-    <div class="lt-fr-actions"><button class="lt-btn-danger" onclick="ltCancelReq('${f.id}')">Cancel</button></div>
-  </div>`).join('')+'</div>';
+  if (!_ltUser && _globalUser) { _ltUser = _globalUser; _ltProfile = _globalProfile; }
+  const el=document.getElementById('lt-sent-list');
+  if (!el || !_ltUser) return;
+  try {
+    const {data}=await supa.from('lt_friendships')
+      .select('*,rec:lt_profiles!lt_friendships_recipient_id_fkey(username)')
+      .eq('requester_id',_ltUser.id).eq('status','pending');
+    if (!data?.length) { el.innerHTML='<div class="lt-card"><div class="lt-empty" style="padding:24px;text-align:center;color:var(--muted);">No sent requests</div></div>'; return; }
+    el.innerHTML='<div class="lt-card">'+data.map(f=>`<div class="lt-fr-row">
+      <div class="lt-fr-avatar" style="background:${ltAvatarColor(f.rec.username)};color:#000;">${ltInitials(f.rec.username)}</div>
+      <div class="lt-fr-info"><div class="lt-fr-name">${f.rec.username}</div><div class="lt-fr-sub">Pending...</div></div>
+      <div class="lt-fr-actions"><button class="lt-btn-danger" onclick="ltCancelReq('${f.id}')">Cancel</button></div>
+    </div>`).join('')+'</div>';
+  } catch(e) {}
 }
 
 async function ltRespondFriend(id, status) {
-  await supa.from('lt_friendships').update({status}).eq('id',id);
-  ltToast(status==='accepted'?'Friend added! 👥':'Declined'); ltLoadRequests();
-  if (status==='accepted') ltLoadFriends();
+  try { await supa.from('lt_friendships').update({status}).eq('id',id); ltToast(status==='accepted'?'Friend added! 👥':'Declined'); ltLoadRequests(); if(status==='accepted')ltLoadFriends(); }
+  catch(e) { ltToast('Error: '+e.message); }
 }
 
 async function ltCancelReq(id) {
-  await supa.from('lt_friendships').delete().eq('id',id);
-  ltToast('Cancelled'); ltLoadSent();
+  try { await supa.from('lt_friendships').delete().eq('id',id); ltToast('Cancelled'); ltLoadSent(); }
+  catch(e) { ltToast('Error: '+e.message); }
 }
 
 function ltChallengeFriend() { ltPage('challenges'); setTimeout(()=>ltOpenChallengeModal(),300); }
 
 // LifeTrack auth handled by gInit() above
-</script>
 
-<script>
 // ==================== TRANSLATIONS ====================
 const T = {
   en: {
@@ -3968,7 +3916,7 @@ const T = {
     wt_chart_title:"PESO A LO LARGO DEL TIEMPO",
     wt_legend_weight:"■ Peso (kg)", wt_legend_1rm:"■ 1RM Est.",
     wt_all_logs:"TODOS LOS REGISTROS",
-    wt_new_entry:"NUEVO ▲", wt_del_confirm:"¿Eliminar este registro?",
+    wt_new_entry:"NUEVO ▲", btn_logout:"Cerrar sesión", wt_del_confirm:"¿Eliminar este registro?",
     wt_code_created:"✓ Código creado — ¡anótalo!", wt_code_loaded:"✓ Cargadas", wt_code_sets:"series", wt_code_new:"✓ Perfil creado!", wt_code_err:"El código debe tener 6 caracteres",
     wt_saved_ok:"✓ GUARDADO!", wt_week_label:"Semana:",
     lt_dashboard:"Panel", lt_habits:"Hábitos", lt_challenges:"Retos",
@@ -4306,5 +4254,35 @@ window.setLang = function(lang) {
 })();
 </script>
 
+<!-- Auth background animation -->
+<script>
+(function(){
+  var c = document.getElementById('auth-bg-canvas');
+  if (!c) return;
+  var ctx = c.getContext('2d'), W, H, pts = [], t = 0;
+  function resize(){ W = c.width = window.innerWidth; H = c.height = window.innerHeight; }
+  function Pt(){ this.x=Math.random()*W; this.y=Math.random()*H; this.vx=(Math.random()-.5)*.3; this.vy=(Math.random()-.5)*.3; this.r=Math.random()*1.2+.3; this.c=Math.random()>.5?'rgba(232,255,59,.4)':'rgba(59,255,212,.35)'; }
+  Pt.prototype.move=function(){ this.x+=this.vx; this.y+=this.vy; if(this.x<0||this.x>W||this.y<0||this.y>H){this.x=Math.random()*W;this.y=Math.random()*H;} };
+  resize(); window.addEventListener('resize',resize);
+  for(var i=0;i<80;i++) pts.push(new Pt());
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    // Deep bg
+    ctx.fillStyle='rgba(5,5,10,1)'; ctx.fillRect(0,0,W,H);
+    // Grid
+    ctx.strokeStyle='rgba(232,255,59,0.04)'; ctx.lineWidth=.5;
+    var vx=W/2, vy=H*.4;
+    for(var i=0;i<=10;i++){var bx=i/10*W;ctx.beginPath();ctx.moveTo(bx,H);ctx.lineTo(vx+(bx-vx)*.05,vy);ctx.stroke();}
+    for(var j=1;j<=8;j++){var p=Math.pow(j/8,1.6),y=vy+(H-vy)*p,s=1-(y-vy)/(H-vy),x0=vx-(W/2)*(1-s*.9),x1=vx+(W/2)*(1-s*.9);ctx.beginPath();ctx.moveTo(x0,y);ctx.lineTo(x1,y);ctx.stroke();}
+    // Particles
+    pts.forEach(function(p){p.move();ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,6.28);ctx.fillStyle=p.c;ctx.fill();});
+    // Connections
+    ctx.lineWidth=.3;
+    for(var i=0;i<pts.length;i++){for(var j=i+1;j<pts.length;j++){var dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<90){ctx.strokeStyle='rgba(232,255,59,'+(1-d/90)*.06+')';ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);ctx.stroke();}}}
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+</script>
 
 </body></html>
