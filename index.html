@@ -1968,14 +1968,12 @@ var _globalUser = null, _globalProfile = null;
 var _currentUser = null, _wtCode = null, _wtCache = [], _wtWeekOffset = 0;
 var _ltUser = null, _ltProfile = null, _ltHabits = [], _ltCompletions = {};
 
-LT_POINTS = { easy: 10, medium: 20, hard: 30 };
+var LT_POINTS = { easy: 10, medium: 20, hard: 30 };
 
 </script>
 <script>
 
 // ==================== LIFETRACK ====================
-
-var LT_POINTS = { easy: 10, medium: 20, hard: 30 };
 
 
 function ltToday() {
@@ -2023,7 +2021,7 @@ async function ltLoadDash() {
   const h = new Date().getHours();
   const greet = h<12?'Good morning':h<18?'Good afternoon':'Good evening';
   const greeting = document.getElementById('lt-greeting');
-  if (greeting) greeting.textContent = greet+', '+(_ltProfile?.username||'')+' ⚡';
+  if (greeting) greeting.textContent = greet+', '+((_ltProfile && _ltProfile.username)||'')+' ⚡';
 
   // Refresh profile
   try {
@@ -3672,38 +3670,7 @@ async function gOnSignedIn(user, usernameOverride) {
       _wtCache = (logs || []).map(r => ({
         id: Number(r.id), date: r.date, exercise: r.exercise,
         weight: parseFloat(r.weight), reps: r.reps, sets: r.sets,
-    lp_badge:"🆓 KOSTENLOS · Keine App · Auf jedem Gerät",
-    lp_h1:"Muskeln aufbauen.<br><span>Fortschritt verfolgen.</span><br>Ergebnisse sehen.",
-    lp_sub:"Ein wissenschaftlich fundiertes 3-Tage-Ganzkörperprogramm + Workout-Tracker. Jedes Set protokollieren, wöchentlich Fortschritt sehen.",
-    lp_cta1:"🚀 Kostenlos starten",
-    lp_cta2:"📋 Programm ansehen",
-    lp_log_btn:"🏋️ Training loggen",
-    lp_habits_btn:"⚡ Gewohnheiten prüfen",
-    lp_how_tag:"WIE ES FUNKTIONIERT",
-    lp_how_title:"In 60 Sekunden ansehen",
-    lp_feat_tag:"FUNKTIONEN",
-    lp_feat_title:"Alles was du brauchst",
-    lp_trans_tag:"TRANSFORMATION",
-    lp_trans_title:"Vorher vs Nachher — 12 Wochen",
-    lp_rev_tag:"BEWERTUNGEN",
-    lp_rev_title:"Was Nutzer sagen",
-    lp_final_title:"Starte heute. Komplett kostenlos.",
-    lp_final_sub:"Keine App. Keine Kreditkarte. Anmelden und in 30 Sekunden loslegen.",
-    lp_stat1:"Übungen",
-    lp_stat2:"Tage/Woche",
-    lp_stat3:"Fortschritt",
-    lp_stat4:"Sprachen",
-    g_signin_tab:"Anmelden",
-    g_signup_tab:"Konto erstellen",
-    g_signin_btn:"ANMELDEN →",
-    g_signup_btn:"KONTO ERSTELLEN →",
-    g_free_label:"KOSTENLOS FÜR IMMER · KEINE KARTE",
-    g_tagline:"VERFOLGEN · AUFBAUEN · DOMINIEREN",
-    lt_dashboard:"📊 Dashboard",
-    lt_habits:"🔥 Gewohnheiten",
-    lt_challenges:"⚔️ Challenges",
-    lt_leaderboard:"🏆 Rangliste",
-    lt_friends:"👥 Freunde"        rpe: r.rpe ? parseFloat(r.rpe) : null, notes: r.notes || ''
+        rpe: r.rpe ? parseFloat(r.rpe) : null, notes: r.notes || ''
       }));
       console.log('[WT] Loaded', _wtCache.length, 'sets');
       try { wtRefresh(); } catch(e) { console.warn('wtRefresh error:', e.message); }
@@ -3714,13 +3681,11 @@ async function gOnSignedIn(user, usernameOverride) {
 
   } catch(e) {
     console.error('gOnSignedIn fatal error:', e);
-    // Still hide auth even on error
     gHideAuth();
     switchPage('landing');
   }
 }
-
-// ── Update landing hero for logged-in user ──
+// ==================== LANG SWITCHER ====================
 async function updateLandingHero() {
   if (!_globalProfile) return;
   document.getElementById('lp-guest').style.display = 'none';
