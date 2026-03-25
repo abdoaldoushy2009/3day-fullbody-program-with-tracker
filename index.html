@@ -572,6 +572,31 @@
   .lt-tab:hover{color:var(--text);}
   .lt-tab.active{color:var(--accent3);border-bottom-color:var(--accent3);}
   .lt-badge{background:var(--accent2);color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:8px;margin-left:3px;}
+  /* ── Monthly Habit Tracker Grid ── */
+  .habit-tracker-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:20px;}
+  .habit-tracker{border-collapse:collapse;width:100%;min-width:700px;font-family:'Space Mono',monospace;font-size:11px;}
+  .habit-tracker th,.habit-tracker td{border:1px solid var(--border);text-align:center;padding:0;}
+  .habit-tracker thead tr:first-child th{background:var(--accent);color:#000;font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:1px;padding:8px 12px;}
+  .habit-tracker .col-name{text-align:left;padding:0 10px;white-space:nowrap;min-width:140px;max-width:180px;overflow:hidden;text-overflow:ellipsis;background:var(--card);font-size:11px;color:var(--text);}
+  .habit-tracker .col-day{width:24px;min-width:24px;font-size:9px;color:var(--muted);background:rgba(255,255,255,0.02);padding:5px 0;}
+  .habit-tracker .col-day.today{background:rgba(232,255,59,0.12);color:var(--accent);font-weight:700;}
+  .habit-tracker .col-day.weekend{background:rgba(255,255,255,0.01);color:rgba(255,255,255,0.3);}
+  .habit-tracker .habit-row-name{height:36px;font-size:11px;}
+  .habit-tracker .habit-cell{height:36px;width:24px;cursor:pointer;position:relative;transition:background 0.15s;}
+  .habit-tracker .habit-cell:hover{background:rgba(59,255,212,0.1);}
+  .habit-tracker .habit-cell.done{background:var(--accent3);}
+  .habit-tracker .habit-cell.done::after{content:'✓';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#000;}
+  .habit-tracker .habit-cell.future{cursor:default;background:rgba(255,255,255,0.01);}
+  .habit-tracker .habit-cell.future:hover{background:rgba(255,255,255,0.01);}
+  .habit-tracker .row-num{font-size:10px;color:var(--muted);width:24px;min-width:24px;background:rgba(255,255,255,0.02);}
+  /* Score graph section */
+  .habit-score-wrap{overflow-x:auto;margin-bottom:20px;}
+  .habit-score-table{border-collapse:collapse;width:100%;min-width:700px;font-family:'Space Mono',monospace;font-size:11px;}
+  .habit-score-table th,.habit-score-table td{border:1px solid var(--border);text-align:center;padding:0;}
+  .habit-score-table .score-label{text-align:left;padding:4px 8px;font-size:10px;color:var(--muted);background:var(--card);width:50px;}
+  .habit-score-table .score-cell{height:20px;width:24px;min-width:24px;}
+  .habit-score-table .score-cell.filled{background:var(--accent3);opacity:0.7;}
+  .habit-score-header{background:rgba(59,255,212,0.08);color:var(--accent3);font-family:'Bebas Neue',sans-serif;font-size:13px;padding:6px 8px;}
   /* Habit rows */
   .lt-habit-row{display:flex;align-items:center;gap:14px;padding:14px 20px;border-bottom:1px solid var(--border);transition:background 0.2s;}
   .lt-habit-row:last-child{border-bottom:none;}
@@ -2149,7 +2174,155 @@ async function ltLoadHabits() {
     return;
   }
 
-  el.innerHTML = '<div class="lt-card">' + _ltHabits.map(h => ltHabitRowHTML(h, false)).join('') + '</div>';
+  // Load full month completions for the tracker grid
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth();
+  const daysInMonth = new Date(year, month+1, 0).getDate();
+  const todayDay = now.getDate();
+  const monthStr = `${year}-${String(month+1).padStart(2,'0')}`;
+
+  // Load all completions for this month
+  let monthCompletions = {};
+  try {
+    const { data: comps } = await supa
+      .from('lt_completions')
+      .select('habit_id,date,status')
+      .eq('user_id', _ltUser.id)
+      .gte('date', `${monthStr}-01`)
+      .lte('date', `${monthStr}-${String(daysInMonth).padStart(2,'0')}`);
+    (comps||[]).forEach(c => {
+      const day = parseInt(c.date.split('-')[2]);
+      if (!monthCompletions[c.habit_id]) monthCompletions[c.habit_id] = {};
+      monthCompletions[c.habit_id][day] = c.status === 'done';
+    });
+  } catch(e) {}
+
+  // Month name
+  const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const monthName = monthNames[month];
+
+  // Build day headers
+  const dayHeaders = Array.from({length:daysInMonth},(_,i)=>{
+    const d = i+1;
+    const date = new Date(year,month,d);
+    const dow = date.getDay(); // 0=Sun,6=Sat
+    const isWeekend = dow===0||dow===6;
+    const isToday = d===todayDay;
+    const cls = isToday?'col-day today':isWeekend?'col-day weekend':'col-day';
+    return `<th class="${cls}">${d}</th>`;
+  }).join('');
+
+  // Build habit rows
+  const habitRows = _ltHabits.map((h,idx) => {
+    const comps = monthCompletions[h.id] || {};
+    const cells = Array.from({length:daysInMonth},(_,i)=>{
+      const d = i+1;
+      const isFuture = d > todayDay;
+      const isDone = comps[d];
+      const isToday = d === todayDay;
+      if (isFuture) return `<td class="habit-cell future"></td>`;
+      const border = isToday ? 'border:1px solid var(--accent);' : '';
+      return `<td class="habit-cell ${isDone?'done':''}" style="${border}" onclick="ltToggleDay('${h.id}','${h.difficulty}',${!!h.requires_proof},${d},'${monthStr}')"></td>`;
+    }).join('');
+    const pts = LT_POINTS[h.difficulty]||10;
+    const doneCount = Object.values(comps).filter(Boolean).length;
+    return `<tr>
+      <td class="row-num">${idx+1}.</td>
+      <td class="col-name habit-row-name" title="${h.name}">
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span class="lt-diff lt-diff-${h.difficulty}" style="font-size:8px;padding:1px 5px;">${h.difficulty[0].toUpperCase()}</span>
+          <span>${h.name}</span>
+        </div>
+        <div style="font-size:9px;color:var(--accent3);margin-top:2px;">🔥${h.streak||0} · +${pts}pts · ${doneCount}/${todayDay}d</div>
+      </td>
+      ${cells}
+    </tr>`;
+  }).join('');
+
+  // Score per day (number of habits done)
+  const scoreRows = [];
+  for (let score = _ltHabits.length; score >= Math.max(1, _ltHabits.length-7); score--) {
+    const cells = Array.from({length:daysInMonth},(_,i)=>{
+      const d = i+1;
+      if (d > todayDay) return `<td class="score-cell"></td>`;
+      const dayScore = _ltHabits.filter(h => (monthCompletions[h.id]||{})[d]).length;
+      const filled = dayScore >= score;
+      return `<td class="score-cell ${filled?'filled':''}"></td>`;
+    }).join('');
+    scoreRows.push(`<tr><td class="score-label">${score}</td>${cells}</tr>`);
+  }
+
+  el.innerHTML = `
+    <!-- Tracker header -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+      <div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;color:var(--accent);">MONTHLY HABIT TRACKER</div>
+        <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);">${monthName} ${year}</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--accent3);">
+          ${_ltHabits.filter(h=>(_ltCompletions[h.id])).length}/${_ltHabits.length} done today
+        </div>
+        <button class="lt-btn-sm" onclick="ltOpenHabitModal()" style="border-color:var(--accent3);color:var(--accent3);">+ Add</button>
+      </div>
+    </div>
+
+    <!-- Main tracker grid -->
+    <div class="habit-tracker-wrap">
+      <table class="habit-tracker">
+        <thead>
+          <tr>
+            <th colspan="2" style="text-align:left;padding:8px 12px;background:var(--surface);font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:1px;">HABITS / PROTOCOLS</th>
+            ${dayHeaders}
+          </tr>
+        </thead>
+        <tbody>${habitRows}</tbody>
+      </table>
+    </div>
+
+    <!-- Score graph -->
+    <div style="margin-top:16px;margin-bottom:8px;">
+      <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:8px;">Daily Score Graph</div>
+      <div class="habit-score-wrap">
+        <table class="habit-score-table">
+          <thead>
+            <tr>
+              <th class="score-label" style="background:rgba(59,255,212,0.08);color:var(--accent3);padding:5px 8px;font-size:10px;">Done!</th>
+              ${Array.from({length:daysInMonth},(_,i)=>{
+                const d=i+1;
+                const dow=new Date(year,month,d).getDay();
+                const cls=d===todayDay?'col-day today':dow===0||dow===6?'col-day weekend':'col-day';
+                return `<th class="${cls}">${d}</th>`;
+              }).join('')}
+            </tr>
+          </thead>
+          <tbody>${scoreRows.join('')}</tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Edit/Delete row -->
+    <div style="margin-top:16px;border-top:1px solid var(--border);padding-top:12px;">
+      <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:10px;">Manage Habits</div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        ${_ltHabits.map((h,i) => `
+          <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--card);border:1px solid var(--border);">
+            <span style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);min-width:20px;">${i+1}.</span>
+            <span class="lt-diff lt-diff-${h.difficulty}" style="font-size:9px;">${h.difficulty}</span>
+            <span style="flex:1;font-size:13px;">${h.name}</span>
+            <span style="font-family:'Space Mono',monospace;font-size:10px;color:var(--accent3);">🔥 ${h.streak||0}</span>
+            <button class="lt-btn-sm" onclick="ltEditHabit('${h.id}')">Edit</button>
+            <button class="lt-btn-danger" onclick="ltDeleteHabit('${h.id}')">✕</button>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <div style="margin-top:20px;padding:12px;background:rgba(0,0,0,0.2);border-top:1px solid var(--border);text-align:center;">
+      <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);font-style:italic;">"Success is the Product of Daily Habits"</div>
+    </div>
+  `;
 }
 
 function ltHabitRowHTML(h, mini) {
@@ -2173,6 +2346,59 @@ function ltHabitRowHTML(h, mini) {
     </div>`:''}
   </div>`;
 }
+
+// Toggle habit for a specific day in the monthly tracker
+async function ltToggleDay(habitId, difficulty, requiresProof, day, monthStr) {
+  if (!_ltUser && _globalUser) { _ltUser = _globalUser; _ltProfile = _globalProfile; }
+  if (!_ltUser) return;
+  const dateStr = `${monthStr}-${String(day).padStart(2,'0')}`;
+  const today = ltToday();
+  const isToday = dateStr === today;
+
+  // Check if already done for that day
+  try {
+    const { data: existing } = await supa
+      .from('lt_completions')
+      .select('id,status')
+      .eq('user_id', _ltUser.id)
+      .eq('habit_id', habitId)
+      .eq('date', dateStr)
+      .maybeSingle();
+
+    if (existing) {
+      // Undo — delete the completion
+      await supa.from('lt_completions').delete().eq('id', existing.id);
+      if (isToday) {
+        await ltUpdatePoints(-(LT_POINTS[difficulty]||10));
+        _ltCompletions[habitId] = false;
+      }
+      ltToast('Unmarked ✓');
+    } else {
+      // Mark done
+      if (requiresProof && isToday) {
+        document.getElementById('lt-proof-habit-id').value = habitId;
+        ltOpenModal('lt-proof-modal');
+        return;
+      }
+      await supa.from('lt_completions').insert({
+        user_id: _ltUser.id, habit_id: habitId, date: dateStr, status: 'done'
+      });
+      if (isToday) {
+        await ltUpdatePoints(LT_POINTS[difficulty]||10);
+        _ltCompletions[habitId] = true;
+        // Update streak
+        const h = _ltHabits.find(x=>x.id===habitId);
+        const newStreak = (h?.streak||0)+1;
+        await supa.from('lt_habits').update({streak:newStreak,last_completed:dateStr}).eq('id',habitId);
+      }
+      ltToast(isToday ? `✓ Done! +${LT_POINTS[difficulty]||10} pts` : '✓ Marked');
+    }
+    // Reload the tracker
+    await ltLoadHabitsData();
+    await ltLoadHabits();
+  } catch(e) { ltToast('Error: '+e.message); }
+}
+
 
 async function ltToggleHabit(habitId, difficulty, requiresProof) {
   if (!_ltUser && _globalUser) { _ltUser = _globalUser; _ltProfile = _globalProfile; }
@@ -2682,8 +2908,8 @@ T = {
     g_free_label:"FREE FOREVER · NO CREDIT CARD",g_tagline:"TRACK · BUILD · DOMINATE",
     ph_email:"your@email.com",ph_username:"coolname123",ph_pass:"••••••••",ph_pass_new:"Min. 6 characters",ph_pass_confirm:"Repeat password", wt_week_label:"Week:",
     // LifeTrack keys
-    lt_dashboard:"Dashboard", lt_habits:"Habits", lt_challenges:"Challenges",
-    lt_leaderboard:"Leaderboard", lt_friends:"Friends", lt_signout:"Sign Out",
+    lt_dashboard:"📊 Dashboard", lt_habits:"🔥 Habits", lt_challenges:"⚔️ Challenges",
+    lt_leaderboard:"🏆 Board", lt_friends:"👥 Friends", lt_signout:"Sign Out",
     lt_new_habit:"New Habit", lt_save:"Save", lt_cancel:"Cancel",
     lt_easy:"Easy", lt_medium:"Medium", lt_hard:"Hard",
     lt_points:"Points", lt_streak:"Best Streak", lt_today:"Today",
@@ -2829,8 +3055,8 @@ T = {
     g_signin_btn:"دخول ←",g_signup_btn:"إنشاء الحساب ←",
     g_free_label:"مجاني للأبد · بدون بطاقة",g_tagline:"تتبع · ابنِ · تفوق",
     ph_email:"بريدك@مثال.com",ph_username:"اسم_مستخدم",ph_pass:"كلمة السر",ph_pass_new:"6 أحرف على الأقل",ph_pass_confirm:"أعد كتابة كلمة السر", wt_week_label:"الأسبوع:",
-    lt_dashboard:"لوحة التحكم", lt_habits:"العادات", lt_challenges:"التحديات",
-    lt_leaderboard:"المتصدرين", lt_friends:"الأصدقاء", lt_signout:"تسجيل الخروج",
+    lt_dashboard:"📊 لوحة التحكم", lt_habits:"🔥 العادات", lt_challenges:"⚔️ التحديات",
+    lt_leaderboard:"🏆 المتصدرون", lt_friends:"👥 الأصدقاء", lt_signout:"تسجيل الخروج",
     lt_new_habit:"عادة جديدة", lt_save:"حفظ", lt_cancel:"إلغاء",
     lt_easy:"سهل", lt_medium:"متوسط", lt_hard:"صعب",
     lt_points:"النقاط", lt_streak:"أفضل سلسلة", lt_today:"اليوم",
@@ -2981,8 +3207,8 @@ T = {
     g_signin_btn:"ENTRAR →",g_signup_btn:"CREAR CUENTA →",
     g_free_label:"GRATIS PARA SIEMPRE · SIN TARJETA",g_tagline:"REGISTRA · CONSTRUYE · DOMINA",
     ph_email:"tu@correo.com",ph_username:"nombre123",ph_pass:"••••••••",ph_pass_new:"Mín. 6 caracteres",ph_pass_confirm:"Repetir contraseña", wt_week_label:"Semana:",
-    lt_dashboard:"Panel", lt_habits:"Hábitos", lt_challenges:"Retos",
-    lt_leaderboard:"Clasificación", lt_friends:"Amigos", lt_signout:"Cerrar sesión",
+    lt_dashboard:"📊 Panel", lt_habits:"🔥 Hábitos", lt_challenges:"⚔️ Retos",
+    lt_leaderboard:"🏆 Ranking", lt_friends:"👥 Amigos", lt_signout:"Cerrar sesión",
     lt_new_habit:"Nuevo hábito", lt_save:"Guardar", lt_cancel:"Cancelar",
     lt_easy:"Fácil", lt_medium:"Medio", lt_hard:"Difícil",
     lt_points:"Puntos", lt_streak:"Mejor racha", lt_today:"Hoy",
@@ -3133,8 +3359,8 @@ T = {
     g_signin_btn:"ANMELDEN →",g_signup_btn:"KONTO ERSTELLEN →",
     g_free_label:"KOSTENLOS FÜR IMMER · KEINE KARTE",g_tagline:"VERFOLGEN · AUFBAUEN · DOMINIEREN",
     ph_email:"deine@email.de",ph_username:"name123",ph_pass:"••••••••",ph_pass_new:"Mind. 6 Zeichen",ph_pass_confirm:"Passwort wiederholen", wt_week_label:"Woche:",
-    lt_dashboard:"Dashboard", lt_habits:"Gewohnheiten", lt_challenges:"Herausforderungen",
-    lt_leaderboard:"Rangliste", lt_friends:"Freunde", lt_signout:"Abmelden",
+    lt_dashboard:"📊 Dashboard", lt_habits:"🔥 Gewohnheiten", lt_challenges:"⚔️ Herausforderungen",
+    lt_leaderboard:"🏆 Rangliste", lt_friends:"👥 Freunde", lt_signout:"Abmelden",
     lt_new_habit:"Neue Gewohnheit", lt_save:"Speichern", lt_cancel:"Abbrechen",
     lt_easy:"Einfach", lt_medium:"Mittel", lt_hard:"Schwer",
     lt_points:"Punkte", lt_streak:"Beste Serie", lt_today:"Heute",
@@ -3200,9 +3426,8 @@ function setLang(lang) {
     if (el) el.placeholder = ph;
   });
   window._currentLang = lang;
-  // Translate LifeTrack nav buttons
-  const ltNavMap = { 'lt-nav-dash':'lt_dashboard','lt-nav-habits':'lt_habits','lt-nav-challenges':'lt_challenges','lt-nav-leaderboard':'lt_leaderboard','lt-nav-friends':'lt_friends' };
-  Object.entries(ltNavMap).forEach(([id, key]) => { const el=document.getElementById(id); if(el && t[key]) el.textContent = ['📊','🔥','⚔️','🏆','👥'][Object.keys(ltNavMap).indexOf(id)]+' '+t[key]; });
+  // LifeTrack nav buttons use data-i18n — handled above automatically
+  // Also translate sign out button
   const ltSignOutBtn = document.querySelector('.lt-signout');
   if (ltSignOutBtn && t.lt_signout) ltSignOutBtn.textContent = t.lt_signout;
   // Re-render tracker if active to pick up translated empty states
